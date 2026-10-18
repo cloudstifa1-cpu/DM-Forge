@@ -13,6 +13,27 @@ function showToast(msg, duration = 2500) {
   setTimeout(() => toast.remove(), duration);
 }
 
+// ── Landing / app shell toggle ────────────────────────────
+function setupLanding() {
+  // If user has launched before, skip landing and go straight to app
+  let hasLaunched = false;
+  try { hasLaunched = localStorage.getItem('dmforge_launched') === '1'; } catch (e) {}
+
+  // Also skip if a ?tab= param is in the URL (deep link from PWA shortcut)
+  const params = new URLSearchParams(window.location.search);
+  if (hasLaunched || params.get('tab')) {
+    document.body.classList.add('app-launched');
+  }
+
+  const launchBtn = document.getElementById('launch-app-btn');
+  if (launchBtn) {
+    launchBtn.addEventListener('click', () => {
+      document.body.classList.add('app-launched');
+      try { localStorage.setItem('dmforge_launched', '1'); } catch (e) {}
+    });
+  }
+}
+
 // ── Tab routing ────────────────────────────────────────────
 function activateTab(tabId) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -79,6 +100,7 @@ function registerServiceWorker() {
 
 // ── App init ───────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  setupLanding();
   setupTabs();
   setupProUnlock();
   setupInitiativeUI();

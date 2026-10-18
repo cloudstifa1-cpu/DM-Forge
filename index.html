@@ -11,6 +11,7 @@
   <meta name="apple-mobile-web-app-title" content="DM Forge">
 
   <title>DM Forge</title>
+  <meta name="claude:viewport-fit-sides" content="cover">
   <link rel="manifest" href="/manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,6 +19,113 @@
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+
+  <!-- ══════════════════════════════════════════════════════
+       LANDING PAGE — shown until user taps "Launch App"
+       Hidden once app is launched (class .app-launched on body)
+       ══════════════════════════════════════════════════════ -->
+  <div class="landing" id="landing" role="main" aria-label="DM Forge home">
+
+    <div class="landing-inner">
+
+      <!-- Sigil -->
+      <div class="landing-sigil" aria-hidden="true">
+        <svg viewBox="0 0 64 64" fill="none">
+          <!-- Anvil base -->
+          <rect x="10" y="44" width="44" height="8" rx="1" fill="#b8952a" opacity=".9"/>
+          <!-- Horn -->
+          <path d="M10 44 L4 48 L10 52Z" fill="#b8952a" opacity=".6"/>
+          <!-- Body -->
+          <path d="M18 44V30c0-7.7 6.3-14 14-14s14 6.3 14 14v14" fill="none" stroke="#c4622d" stroke-width="3"/>
+          <!-- Strike line -->
+          <path d="M6 30h52" stroke="#b8952a" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+          <!-- Ember sparks -->
+          <circle cx="48" cy="22" r="2" fill="#e0743a" opacity=".8"/>
+          <circle cx="52" cy="16" r="1.5" fill="#b8952a" opacity=".6"/>
+          <circle cx="44" cy="15" r="1" fill="#e0743a" opacity=".5"/>
+        </svg>
+      </div>
+
+      <!-- Brand -->
+      <h1 class="landing-title">DM Forge</h1>
+      <p class="landing-tagline">The ultimate DM toolkit</p>
+      <p class="landing-sub">Initiative tracker · Encounter builder · Works offline</p>
+
+      <!-- Feature comparison -->
+      <div class="feature-grid">
+
+        <div class="feature-col">
+          <div class="feature-col-head free">Free</div>
+          <ul class="feature-list">
+            <li>
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+              Initiative Tracker
+            </li>
+            <li>
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+              Encounter Builder
+            </li>
+            <li>
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+              HP Tracking
+            </li>
+            <li>
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+              Full Offline Use
+            </li>
+          </ul>
+        </div>
+
+        <div class="feature-col pro-col">
+          <div class="feature-col-head pro">Pro — $2.99</div>
+          <ul class="feature-list">
+            <li>
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+              Everything in Free
+            </li>
+            <li>
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+              NPC Generator
+            </li>
+            <li>
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+              Loot Generator
+            </li>
+            <li>
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+              Session Notes
+            </li>
+            <li>
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+              Spell Reference
+            </li>
+            <li>
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+              One-time purchase
+            </li>
+          </ul>
+        </div>
+
+      </div><!-- /feature-grid -->
+
+      <!-- CTAs -->
+      <div class="landing-ctas">
+        <button class="btn-launch" id="launch-app-btn">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+            <circle cx="10" cy="10" r="8"/>
+            <path d="M10 5v5l3 3"/>
+          </svg>
+          Launch App
+        </button>
+        <button class="btn-get-pro js-unlock-pro">
+          Unlock Pro — $2.99
+        </button>
+      </div>
+
+      <p class="landing-fine">No account needed · Install to home screen · 5e SRD rules</p>
+
+    </div><!-- /landing-inner -->
+  </div><!-- /landing -->
 
   <!-- ── Header ─────────────────────────────────────────── -->
   <header class="app-header" role="banner">
