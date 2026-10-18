@@ -371,6 +371,31 @@
         New Session
       </button>
       <div id="notes-list" style="margin-bottom:var(--gap-md)"></div>
+
+      <!-- Linked-word toolbar -->
+      <div id="lw-toolbar" class="lw-toolbar" style="display:none" role="toolbar" aria-label="Linked word tools">
+        <button class="lw-tb-btn" id="lw-link-word-btn" title="Link selected text as an entity">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+          Link
+        </button>
+        <select class="lw-tb-select" id="lw-insert-ph" aria-label="Insert placeholder">
+          <option value="">Insert…</option>
+          <option value="NPC Name">NPC Name</option>
+          <option value="Location">Location</option>
+          <option value="Item">Item</option>
+          <option value="TODO">TODO</option>
+          <option value="???">???</option>
+        </select>
+        <button class="lw-tb-btn lw-tb-jump" id="lw-jump-ph" title="Jump to next placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <span id="lw-ph-count" class="lw-ph-badge" style="display:none"></span>
+        </button>
+        <button class="lw-tb-btn lw-tb-vault" id="lw-vault-btn" title="Open entity vault">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4.03 3-9 3S3 13.66 3 12"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/></svg>
+          Vault
+        </button>
+      </div>
+
       <div id="notes-editor-area" style="display:none">
         <div class="field-group" style="margin-bottom:var(--gap-sm)">
           <label for="note-title">Title</label>
@@ -378,8 +403,15 @@
         </div>
         <div class="field-group">
           <label for="note-content">Notes</label>
-          <textarea class="field-input note-textarea" id="note-content" placeholder="What happened this session..." rows="12"></textarea>
+          <!-- Highlight overlay + textarea stacked -->
+          <div class="lw-editor-wrap">
+            <div class="lw-highlight field-input note-textarea" id="lw-highlight" aria-hidden="true"></div>
+            <textarea class="field-input note-textarea lw-textarea" id="note-content" placeholder="What happened this session…" rows="12"></textarea>
+          </div>
         </div>
+        <!-- Entity chips -->
+        <div class="lw-chips-label" id="lw-chips-label">Mentioned</div>
+        <div class="lw-entity-chips" id="lw-entity-chips"></div>
       </div>
     </section>
 
