@@ -34,6 +34,72 @@ function setupLanding() {
   }
 }
 
+// ── Pro state ──────────────────────────────────────────────
+const PRO_TABS = ['npc','loot','notes','spells'];
+
+let proUnlocked = false;
+let proTapCount = 0;
+let proTapTimer = null;
+
+function isProUnlocked() {
+  if (proUnlocked) return true;
+  try { return localStorage.getItem('dmforge_pro') === '1'; } catch (e) { return false; }
+}
+
+function unlockPro(silent = false) {
+  proUnlocked = true;
+  try { localStorage.setItem('dmforge_pro', '1'); } catch (e) {}
+  applyProState();
+  if (!silent) showToast('Pro unlocked! All features are now available.');
+}
+
+function lockPro() {
+  proUnlocked = false;
+  try { localStorage.removeItem('dmforge_pro'); } catch (e) {}
+  applyProState();
+  showToast('Pro locked. Dev mode off.');
+}
+
+function applyProState() {
+  const unlocked = isProUnlocked();
+  // Show/hide lock banners
+  PRO_TABS.forEach(tab => {
+    const banner = document.getElementById(`${tab}-lock-banner`);
+    if (banner) banner.hidden = unlocked;
+  });
+  // Style pro tabs
+  document.querySelectorAll('.nav-tab.pro-tab').forEach(t => {
+    t.classList.toggle('pro-locked', !unlocked);
+  });
+  // Update dev badge
+  const badge = document.getElementById('dev-pro-badge');
+  if (badge) {
+    badge.textContent = unlocked ? 'Pro ON' : 'Pro OFF';
+    badge.classList.toggle('pro-on', unlocked);
+  }
+}
+
+// Dev toggle: tap the lock icon 5 times
+function setupDevProToggle() {
+  const badge = document.getElementById('dev-pro-badge');
+  if (!badge) return;
+  badge.addEventListener('click', () => {
+    if (isProUnlocked()) {
+      lockPro();
+    } else {
+      proTapCount++;
+      clearTimeout(proTapTimer);
+      if (proTapCount >= 5) {
+        proTapCount = 0;
+        unlockPro();
+      } else {
+        showToast(`Tap ${5 - proTapCount} more time${5 - proTapCount !== 1 ? 's' : ''} to toggle Pro.`, 1500);
+        proTapTimer = setTimeout(() => { proTapCount = 0; }, 3000);
+      }
+    }
+  });
+}
+
 // ── Tab routing ────────────────────────────────────────────
 function activateTab(tabId) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -52,10 +118,7 @@ function setupTabs() {
   document.querySelectorAll('.nav-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       const tab = btn.dataset.tab;
-      if (btn.classList.contains('locked')) {
-        showToast('Unlock DM Forge Pro to access this feature.');
-        return;
-      }
+      // Pro tabs: navigate but show lock banner if not unlocked
       activateTab(tab);
     });
   });
@@ -73,11 +136,10 @@ function setupTabs() {
 
 // ── Pro unlock (placeholder) ───────────────────────────────
 function setupProUnlock() {
-  document.querySelectorAll('.js-unlock-pro').forEach(btn => {
-    btn.addEventListener('click', () => {
+  document.addEventListener('click', e => {
+    if (e.target.closest('.js-unlock-pro')) {
       showToast('Payment integration coming soon — stay tuned!');
-      // TODO: integrate payment (Stripe, PayPal, or in-app purchase)
-    });
+    }
   });
 }
 
@@ -103,7 +165,15 @@ document.addEventListener('DOMContentLoaded', () => {
   setupLanding();
   setupTabs();
   setupProUnlock();
+  setupDevProToggle();
+  // Apply Pro state on load (restores from localStorage)
+  if (isProUnlocked()) unlockPro(true);
+  else applyProState();
   setupInitiativeUI();
   setupEncounterUI();
+  setupNPCUI();
+  setupLootUI();
+  setupNotesUI();
+  setupSpellsUI();
   registerServiceWorker();
 });

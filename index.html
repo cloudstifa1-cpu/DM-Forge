@@ -139,9 +139,12 @@
       </svg>
       <h1>DM Forge</h1>
     </div>
-    <button class="pro-badge js-unlock-pro" aria-label="Unlock DM Forge Pro for $2.99">
-      DM Forge Pro — $2.99
-    </button>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button id="dev-pro-badge" class="dev-badge" title="Tap 5× to toggle Pro (dev mode)" aria-label="Dev: toggle Pro mode">Pro OFF</button>
+      <button class="pro-badge js-unlock-pro" aria-label="Unlock DM Forge Pro for $2.99">
+        $2.99
+      </button>
+    </div>
   </header>
 
   <!-- ── Toast container ────────────────────────────────── -->
@@ -297,69 +300,124 @@
       </div>
     </section>
 
-    <!-- Pro Features (locked) -->
-    <section class="tab-panel" id="tab-pro" role="tabpanel" aria-label="Pro Features">
+    <!-- NPC Generator -->
+    <section class="tab-panel pro-panel-tab" id="tab-npc" role="tabpanel" aria-label="NPC Generator">
+      <div class="pro-lock-banner" id="npc-lock-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        <span>Pro feature</span>
+        <button class="btn-inline-unlock js-unlock-pro">Unlock — $2.99</button>
+      </div>
       <div class="section-head">
-        <h2>Pro Features</h2>
-        <p>Unlock the full forge. One-time purchase, works offline.</p>
+        <h2>NPC Generator</h2>
+        <p>Instant non-player characters with names, traits, and secrets.</p>
       </div>
+      <button class="btn btn-primary btn-full" id="gen-npc-btn" style="margin-bottom:var(--gap-md)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        Generate NPC
+      </button>
+      <div id="npc-result"></div>
+      <hr class="divider">
+      <div class="add-form-title" style="margin-bottom:8px">Saved NPCs</div>
+      <div id="saved-npcs"></div>
+    </section>
 
-      <div class="locked-features-grid">
-
-        <div class="locked-feature-card">
-          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-            <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14c-5 0-8 2-8 3v1h16v-1c0-1-3-3-8-3z"/>
-          </svg>
-          <span class="feature-name">NPC Generator</span>
-          <svg class="lock-overlay" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <rect x="3" y="11" width="18" height="11" rx="2"/>
-            <path d="M7 11V7a5 5 0 0110 0v4"/>
-          </svg>
-        </div>
-
-        <div class="locked-feature-card">
-          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-            <path d="M20 12V22H4V12M22 7H2v5h20V7zM12 22V7M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/>
-          </svg>
-          <span class="feature-name">Loot Generator</span>
-          <svg class="lock-overlay" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <rect x="3" y="11" width="18" height="11" rx="2"/>
-            <path d="M7 11V7a5 5 0 0110 0v4"/>
-          </svg>
-        </div>
-
-        <div class="locked-feature-card">
-          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/>
-            <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
-          </svg>
-          <span class="feature-name">Session Notes</span>
-          <svg class="lock-overlay" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <rect x="3" y="11" width="18" height="11" rx="2"/>
-            <path d="M7 11V7a5 5 0 0110 0v4"/>
-          </svg>
-        </div>
-
-        <div class="locked-feature-card">
-          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-          </svg>
-          <span class="feature-name">Spell Reference</span>
-          <svg class="lock-overlay" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <rect x="3" y="11" width="18" height="11" rx="2"/>
-            <path d="M7 11V7a5 5 0 0110 0v4"/>
-          </svg>
-        </div>
-
+    <!-- Loot Generator -->
+    <section class="tab-panel pro-panel-tab" id="tab-loot" role="tabpanel" aria-label="Loot Generator">
+      <div class="pro-lock-banner" id="loot-lock-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        <span>Pro feature</span>
+        <button class="btn-inline-unlock js-unlock-pro">Unlock — $2.99</button>
       </div>
-
-      <div class="pro-panel">
-        <h3>Unlock DM Forge Pro</h3>
-        <p>NPC generator, loot tables, session notes, and a full spell reference — all offline, all in one app. One-time purchase, no subscription.</p>
-        <button class="btn btn-pro btn-full js-unlock-pro" style="min-height:52px;font-size:1rem">
-          Unlock for $2.99
-        </button>
+      <div class="section-head">
+        <h2>Loot Generator</h2>
+        <p>Random treasure hoards by CR bracket using 5e DMG tables.</p>
       </div>
+      <div class="panel" style="margin-bottom:var(--gap-md)">
+        <div class="field-row">
+          <div class="field-group">
+            <label for="loot-cr">CR Bracket</label>
+            <select class="field-input cr-select" id="loot-cr">
+              <option value="0-4">CR 0–4</option>
+              <option value="5-10">CR 5–10</option>
+              <option value="11-16">CR 11–16</option>
+              <option value="17+">CR 17+</option>
+            </select>
+          </div>
+          <div class="field-group" style="flex:0 0 auto;justify-content:flex-end;padding-top:20px">
+            <button class="btn btn-primary" id="gen-loot-btn">Roll Hoard</button>
+          </div>
+        </div>
+      </div>
+      <div id="loot-result"></div>
+      <button class="btn btn-secondary btn-full" id="copy-loot-btn" style="margin-top:var(--gap-md)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy Loot to Clipboard
+      </button>
+    </section>
+
+    <!-- Session Notes -->
+    <section class="tab-panel pro-panel-tab" id="tab-notes" role="tabpanel" aria-label="Session Notes">
+      <div class="pro-lock-banner" id="notes-lock-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        <span>Pro feature</span>
+        <button class="btn-inline-unlock js-unlock-pro">Unlock — $2.99</button>
+      </div>
+      <div class="section-head">
+        <h2>Session Notes</h2>
+        <p>One note per session. Saved automatically.</p>
+      </div>
+      <button class="btn btn-primary btn-full" id="new-session-btn" style="margin-bottom:var(--gap-md)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        New Session
+      </button>
+      <div id="notes-list" style="margin-bottom:var(--gap-md)"></div>
+      <div id="notes-editor-area" style="display:none">
+        <div class="field-group" style="margin-bottom:var(--gap-sm)">
+          <label for="note-title">Title</label>
+          <input class="field-input" id="note-title" type="text" placeholder="Session title" maxlength="80">
+        </div>
+        <div class="field-group">
+          <label for="note-content">Notes</label>
+          <textarea class="field-input note-textarea" id="note-content" placeholder="What happened this session..." rows="12"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- Spell Reference -->
+    <section class="tab-panel pro-panel-tab" id="tab-spells" role="tabpanel" aria-label="Spell Reference">
+      <div class="pro-lock-banner" id="spells-lock-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        <span>Pro feature</span>
+        <button class="btn-inline-unlock js-unlock-pro">Unlock — $2.99</button>
+      </div>
+      <div class="section-head">
+        <h2>Spell Reference</h2>
+        <p>5e SRD spells — cantrips through level 3. Tap any spell for details.</p>
+      </div>
+      <!-- Filters -->
+      <div class="spell-filters">
+        <input class="field-input spell-search-input" id="spell-search" type="search" placeholder="Search spells…" aria-label="Search spells">
+        <div class="spell-filter-row">
+          <select class="field-input cr-select" id="spell-class-filter" aria-label="Filter by class">
+            <option value="">All classes</option>
+          </select>
+          <select class="field-input cr-select" id="spell-level-filter" aria-label="Filter by level">
+            <option value="">All levels</option>
+            <option value="0">Cantrip</option>
+            <option value="1">Level 1</option>
+            <option value="2">Level 2</option>
+            <option value="3">Level 3</option>
+          </select>
+          <select class="field-input cr-select" id="spell-school-filter" aria-label="Filter by school">
+            <option value="">All schools</option>
+          </select>
+        </div>
+        <div class="spell-filter-meta">
+          <span id="spell-count" style="color:var(--text-dim);font-size:.8rem"></span>
+          <button class="btn btn-ghost" id="spell-clear-btn" style="font-size:.8rem;min-height:32px">Clear filters</button>
+        </div>
+      </div>
+      <div id="spell-list"></div>
     </section>
 
   </main>
@@ -382,44 +440,43 @@
       Encounter
     </button>
 
-    <button class="nav-tab locked" role="tab" data-tab="pro" aria-label="NPC Generator (Pro)" title="Requires Pro">
+    <button class="nav-tab pro-tab" role="tab" data-tab="npc" aria-label="NPC Generator">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
         <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14c-5 0-8 2-8 3v1h16v-1c0-1-3-3-8-3z"/>
-      </svg>
-      <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-        <rect x="3" y="11" width="18" height="11" rx="2"/>
-        <path d="M7 11V7a5 5 0 0110 0v4"/>
       </svg>
       NPC
     </button>
 
-    <button class="nav-tab locked" role="tab" data-tab="pro" aria-label="Loot Generator (Pro)" title="Requires Pro">
+    <button class="nav-tab pro-tab" role="tab" data-tab="loot" aria-label="Loot Generator">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
         <path d="M20 12V22H4V12M22 7H2v5h20V7zM12 22V7"/>
-      </svg>
-      <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-        <rect x="3" y="11" width="18" height="11" rx="2"/>
-        <path d="M7 11V7a5 5 0 0110 0v4"/>
       </svg>
       Loot
     </button>
 
-    <button class="nav-tab locked" role="tab" data-tab="pro" aria-label="Session Notes (Pro)" title="Requires Pro">
+    <button class="nav-tab pro-tab" role="tab" data-tab="notes" aria-label="Session Notes">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
         <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/>
         <path d="M14 2v6h6M16 13H8M16 17H8"/>
       </svg>
-      <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-        <rect x="3" y="11" width="18" height="11" rx="2"/>
-        <path d="M7 11V7a5 5 0 0110 0v4"/>
-      </svg>
       Notes
+    </button>
+
+    <button class="nav-tab pro-tab" role="tab" data-tab="spells" aria-label="Spell Reference">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+      Spells
     </button>
 
   </nav>
 
   <script src="/js/initiative.js"></script>
   <script src="/js/encounter.js"></script>
+  <script src="/js/npc.js"></script>
+  <script src="/js/loot.js"></script>
+  <script src="/js/notes.js"></script>
+  <script src="/js/spells.js"></script>
   <script src="/js/app.js"></script>
 </body>
 </html>

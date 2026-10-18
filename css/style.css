@@ -826,6 +826,444 @@ h1, h2, h3 {
 }
 
 /* ============================================================
+   Dev Pro Badge
+   ============================================================ */
+
+.dev-badge {
+  font-family: var(--font-ui);
+  font-size: .65rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  padding: 3px 8px;
+  border: 1px solid var(--forge-muted);
+  color: var(--text-dim);
+  border-radius: var(--radius-sm);
+  background: var(--forge-raised);
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+  min-height: 28px;
+}
+
+.dev-badge.pro-on {
+  border-color: var(--gold-dim);
+  color: var(--gold);
+  background: rgba(184,149,42,.12);
+}
+
+/* ============================================================
+   Pro Lock Banner
+   ============================================================ */
+
+.pro-lock-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+  background: rgba(196,98,45,.08);
+  border: 1px solid var(--ember-dim);
+  padding: var(--gap-sm) var(--gap-md);
+  margin-bottom: var(--gap-md);
+  font-size: .85rem;
+  color: var(--text-secondary);
+}
+
+.pro-lock-banner svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--ember);
+}
+
+.pro-lock-banner span { flex: 1; }
+
+.btn-inline-unlock {
+  font-family: var(--font-ui);
+  font-size: .8rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  background: var(--ember);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  min-height: 32px;
+  transition: background .15s;
+}
+
+.btn-inline-unlock:hover { background: var(--ember-bright); }
+
+/* Pro tabs locked state */
+.nav-tab.pro-tab.pro-locked {
+  opacity: .5;
+}
+
+/* ============================================================
+   NPC Generator
+   ============================================================ */
+
+.npc-card {
+  background: var(--forge-surface);
+  border: 1px solid var(--forge-border);
+  padding: var(--gap-md);
+}
+
+.npc-name {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--gold);
+  letter-spacing: .04em;
+  margin-bottom: 2px;
+}
+
+.npc-meta {
+  font-size: .8rem;
+  color: var(--text-secondary);
+  margin-bottom: var(--gap-sm);
+  text-transform: capitalize;
+}
+
+.npc-desc {
+  font-size: .85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: var(--gap-md);
+  padding-bottom: var(--gap-md);
+  border-bottom: 1px solid var(--forge-border);
+}
+
+.npc-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+  margin-bottom: var(--gap-md);
+}
+
+.npc-field {
+  display: flex;
+  gap: var(--gap-sm);
+  font-size: .85rem;
+  line-height: 1.4;
+}
+
+.npc-label {
+  font-family: var(--font-display);
+  font-size: .7rem;
+  color: var(--text-dim);
+  letter-spacing: .04em;
+  min-width: 48px;
+  padding-top: 2px;
+  flex-shrink: 0;
+}
+
+.npc-field span:last-child { color: var(--text-primary); }
+
+.npc-field.secret .npc-label { color: var(--ember-dim); }
+.npc-field.secret span:last-child { color: var(--text-secondary); font-style: italic; }
+
+.npc-actions {
+  display: flex;
+  gap: var(--gap-sm);
+}
+
+.npc-actions .btn { flex: 1; }
+
+/* Saved NPC rows */
+.saved-npc-row {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+  padding: var(--gap-sm) var(--gap-md);
+  background: var(--forge-surface);
+  border: 1px solid var(--forge-border);
+  margin-bottom: var(--gap-xs);
+  min-height: 52px;
+}
+
+.saved-npc-info { flex: 1; min-width: 0; }
+
+.saved-npc-name {
+  display: block;
+  font-size: .9rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.saved-npc-sub {
+  font-size: .75rem;
+  color: var(--text-dim);
+  text-transform: capitalize;
+}
+
+.saved-empty {
+  font-size: .85rem;
+  color: var(--text-dim);
+  padding: var(--gap-md) 0;
+}
+
+/* ============================================================
+   Loot Generator
+   ============================================================ */
+
+.loot-section {
+  margin-bottom: var(--gap-md);
+}
+
+.loot-section-head {
+  font-family: var(--font-display);
+  font-size: .75rem;
+  color: var(--text-dim);
+  letter-spacing: .06em;
+  margin-bottom: var(--gap-sm);
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--forge-border);
+}
+
+.loot-items {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.loot-item {
+  font-size: .875rem;
+  color: var(--text-secondary);
+  padding: 5px var(--gap-sm);
+  background: var(--forge-surface);
+  border-left: 2px solid var(--forge-border);
+  line-height: 1.4;
+}
+
+.loot-item.coin-item {
+  font-family: var(--font-display);
+  font-size: .9rem;
+  color: var(--gold);
+  border-left-color: var(--gold-dim);
+}
+
+.loot-item.magic-item {
+  border-left-color: var(--ember-dim);
+  color: var(--text-primary);
+}
+
+.loot-empty {
+  font-size: .85rem;
+  color: var(--text-dim);
+  padding: var(--gap-md) 0;
+}
+
+/* ============================================================
+   Session Notes
+   ============================================================ */
+
+.notes-row {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+  padding: var(--gap-sm) var(--gap-md);
+  background: var(--forge-surface);
+  border: 1px solid var(--forge-border);
+  border-left: 3px solid transparent;
+  margin-bottom: var(--gap-xs);
+  min-height: 56px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+
+.notes-row.active {
+  border-left-color: var(--ember);
+  background: rgba(196,98,45,.06);
+}
+
+.notes-row:hover:not(.active) {
+  border-left-color: var(--forge-muted);
+}
+
+.notes-row-info { flex: 1; min-width: 0; }
+
+.notes-row-title {
+  display: block;
+  font-size: .9rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.notes-row-date {
+  font-size: .75rem;
+  color: var(--text-dim);
+}
+
+.note-textarea {
+  min-height: 240px;
+  resize: vertical;
+  line-height: 1.6;
+  font-size: .9rem;
+  padding: var(--gap-md);
+  width: 100%;
+  background: var(--forge-raised);
+  border: 1px solid var(--forge-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  transition: border-color .15s;
+}
+
+.note-textarea:focus {
+  border-color: var(--ember);
+  outline: none;
+}
+
+/* ============================================================
+   Spell Reference
+   ============================================================ */
+
+.spell-filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+  margin-bottom: var(--gap-md);
+}
+
+.spell-search-input {
+  background: var(--forge-raised);
+  border: 1px solid var(--forge-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: .95rem;
+  color: var(--text-primary);
+  width: 100%;
+  min-height: var(--touch-min);
+  transition: border-color .15s;
+}
+
+.spell-search-input:focus { border-color: var(--ember); outline: none; }
+
+.spell-filter-row {
+  display: flex;
+  gap: var(--gap-sm);
+}
+
+.spell-filter-row .cr-select { flex: 1; font-size: .8rem; }
+
+.spell-filter-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Spell accordion */
+.spell-card {
+  background: var(--forge-surface);
+  border: 1px solid var(--forge-border);
+  margin-bottom: 4px;
+}
+
+.spell-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-sm);
+  padding: var(--gap-sm) var(--gap-md);
+  min-height: 52px;
+  cursor: pointer;
+  list-style: none;
+  gap: var(--gap-sm);
+  user-select: none;
+}
+
+.spell-summary::-webkit-details-marker { display: none; }
+
+.spell-card[open] .spell-summary {
+  border-bottom: 1px solid var(--forge-border);
+  color: var(--gold);
+}
+
+.spell-name {
+  font-size: .9rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  flex: 1;
+  min-width: 0;
+}
+
+.spell-card[open] .spell-name { color: var(--gold); }
+
+.spell-tags {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.spell-tag {
+  font-size: .65rem;
+  font-family: var(--font-display);
+  letter-spacing: .03em;
+  padding: 2px 6px;
+  background: var(--forge-raised);
+  border: 1px solid var(--forge-border);
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.school-tag { color: var(--text-secondary); }
+
+.spell-body {
+  padding: var(--gap-md);
+}
+
+.spell-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap-sm);
+  margin-bottom: var(--gap-md);
+  font-size: .8rem;
+}
+
+.spell-meta-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.spell-meta-label {
+  font-family: var(--font-display);
+  font-size: .65rem;
+  color: var(--text-dim);
+  letter-spacing: .04em;
+}
+
+.spell-meta-grid > div > span:last-child {
+  color: var(--text-secondary);
+}
+
+.spell-desc {
+  font-size: .85rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-bottom: var(--gap-md);
+}
+
+.spell-classes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.class-chip {
+  font-size: .65rem;
+  font-family: var(--font-display);
+  letter-spacing: .03em;
+  padding: 2px 8px;
+  background: rgba(196,98,45,.1);
+  border: 1px solid var(--ember-dim);
+  color: var(--ember-bright);
+  text-transform: capitalize;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================================
    Landing Page
    ============================================================ */
 
