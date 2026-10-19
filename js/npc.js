@@ -127,37 +127,28 @@ const NPC = (() => {
     return { name, race, occupation, trait, ideal, bond, flaw, description: desc, secret };
   }
 
-  // ── Persistence ───────────────────────────────────────────
-  let saved = [];
-  let nextId = 1;
-
-  function load() {
-    try {
-      const raw = localStorage.getItem('dmforge_npcs');
-      if (!raw) return;
-      const data = JSON.parse(raw);
-      saved = data.saved || [];
-      nextId = data.nextId || 1;
-    } catch (e) { saved = []; }
-  }
+  // ── Persistence (NPCs live in the shared Vault, see vault.js) ──
+  function load() { /* Vault.load() runs once in app.js */ }
 
   function saveNPC(npc) {
-    saved.unshift({ id: nextId++, ...npc });
-    persist();
+    return Vault.add('npc', npc.name, {
+      details: npc.description || '',
+      fields: { race: npc.race ? npc.race[0].toUpperCase() + npc.race.slice(1) : '', occupation: npc.occupation || '',
+        trait: npc.trait || '', ideal: npc.ideal || '', bond: npc.bond || '', flaw: npc.flaw || '', secret: npc.secret || '' }
+    });
   }
 
-  function deleteNPC(id) {
-    saved = saved.filter(n => n.id !== id);
-    persist();
+  function deleteNPC(id) { Vault.remove(id); }
+
+  // Flattened view for the NPC tab list
+  function getSaved() {
+    return Vault.byType('npc').map(e => ({ id: e.id, name: e.name, race: e.fields.race || '', occupation: e.fields.occupation || '' }));
   }
 
-  function persist() {
-    try { localStorage.setItem('dmforge_npcs', JSON.stringify({ saved, nextId })); } catch (e) {}
-  }
+  // Tables are shared with the player-character generator (characters.js)
+  const tables = { NAMES, IDEALS, BONDS, FLAWS };
 
-  function getSaved() { return saved; }
-
-  return { generateNPC, load, saveNPC, deleteNPC, getSaved };
+  return { generateNPC, load, saveNPC, deleteNPC, getSaved, tables };
 })();
 
 // ── UI ────────────────────────────────────────────────────
@@ -204,17 +195,21 @@ function renderSavedNPCs() {
   }
   list.innerHTML = saved.map(n => `
     <div class="saved-npc-row">
-      <div class="saved-npc-info">
+      <div class="saved-npc-info" role="button" tabindex="0" data-open="${n.id}" aria-label="Edit ${escHtml(n.name)}">
         <span class="saved-npc-name">${escHtml(n.name)}</span>
-        <span class="saved-npc-sub">${cap(n.race)} · ${escHtml(n.occupation)}</span>
+        <span class="saved-npc-sub">${escHtml([cap(n.race), n.occupation].filter(Boolean).join(' · ') || 'NPC')}</span>
       </div>
       <button class="icon-btn remove" data-id="${n.id}" aria-label="Delete ${escHtml(n.name)}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
     </div>
   `).join('');
+  list.querySelectorAll('[data-open]').forEach(el => {
+    el.addEventListener('click', () => { if (typeof openEntryCard === 'function') openEntryCard(Number(el.dataset.open)); });
+  });
   list.querySelectorAll('.icon-btn.remove').forEach(btn => {
     btn.addEventListener('click', () => {
+      if (!confirm('Delete ' + (Vault.get(Number(btn.dataset.id)) || {}).name + '?')) return;
       NPC.deleteNPC(Number(btn.dataset.id));
       renderSavedNPCs();
     });

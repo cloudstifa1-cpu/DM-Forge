@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
   <meta name="theme-color" content="#1a1612">
   <meta name="description" content="DM Forge — initiative tracker, encounter builder, and dungeon master toolkit for tabletop RPG. Works offline.">
   <meta name="mobile-web-app-capable" content="yes">
@@ -49,7 +49,7 @@
       <!-- Brand -->
       <h1 class="landing-title">DM Forge</h1>
       <p class="landing-tagline">The ultimate DM toolkit</p>
-      <p class="landing-sub">Initiative tracker · Encounter builder · Works offline</p>
+      <p class="landing-sub">Initiative · Encounters · Characters · Works offline</p>
 
       <!-- Feature comparison -->
       <div class="feature-grid">
@@ -68,6 +68,10 @@
             <li>
               <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
               HP Tracking
+            </li>
+            <li>
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+              Character Generator
             </li>
             <li>
               <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
@@ -98,6 +102,10 @@
             <li>
               <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
               Spell Reference
+            </li>
+            <li>
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+              Portraits &amp; Pre-made Heroes
             </li>
             <li>
               <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
@@ -300,6 +308,11 @@
       </div>
     </section>
 
+    <!-- Characters (free; portrait builder + pre-mades are Pro) -->
+    <section class="tab-panel" id="tab-characters" role="tabpanel" aria-label="Characters">
+      <div id="chars-root"></div>
+    </section>
+
     <!-- NPC Generator -->
     <section class="tab-panel pro-panel-tab" id="tab-npc" role="tabpanel" aria-label="NPC Generator">
       <div class="pro-lock-banner" id="npc-lock-banner">
@@ -374,9 +387,8 @@
 
       <!-- Linked-word toolbar -->
       <div id="lw-toolbar" class="lw-toolbar" style="display:none" role="toolbar" aria-label="Linked word tools">
-        <button class="lw-tb-btn" id="lw-link-word-btn" title="Link selected text as an entity">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-          Link
+        <button class="lw-tb-btn lw-tb-link" id="lw-link-word-btn" title="Select a word or phrase, then tap to link it">
+          <span aria-hidden="true">★</span> Link
         </button>
         <select class="lw-tb-select" id="lw-insert-ph" aria-label="Insert placeholder">
           <option value="">Insert…</option>
@@ -472,6 +484,14 @@
       Encounter
     </button>
 
+    <button class="nav-tab" role="tab" data-tab="characters" aria-label="Characters">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+        <path d="M12 2l7 3v6c0 5-3 8.5-7 11-4-2.5-7-6-7-11V5l7-3z"/>
+        <path d="M9 12l2 2 4-4"/>
+      </svg>
+      Heroes
+    </button>
+
     <button class="nav-tab pro-tab" role="tab" data-tab="npc" aria-label="NPC Generator">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
         <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14c-5 0-8 2-8 3v1h16v-1c0-1-3-3-8-3z"/>
@@ -505,8 +525,10 @@
 
   <script src="js/initiative.js"></script>
   <script src="js/encounter.js"></script>
+  <script src="js/vault.js"></script>
   <script src="js/npc.js"></script>
   <script src="js/loot.js"></script>
+  <script src="js/characters.js"></script>
   <script src="js/notes.js"></script>
   <script src="js/spells.js"></script>
   <script src="js/app.js"></script>

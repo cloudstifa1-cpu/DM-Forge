@@ -71,6 +71,8 @@ function applyProState() {
   document.querySelectorAll('.nav-tab.pro-tab').forEach(t => {
     t.classList.toggle('pro-locked', !unlocked);
   });
+  // Characters tab is free, but its portrait builder and pre-made heroes are Pro
+  if (typeof onCharactersProChange === 'function') onCharactersProChange();
   // Update dev badge
   const badge = document.getElementById('dev-pro-badge');
   if (badge) {
@@ -112,6 +114,10 @@ function activateTab(tabId) {
   if (tabBtn) tabBtn.classList.add('active');
 
   try { localStorage.setItem('dmforge_tab', tabId); } catch (e) {}
+
+  // Names may have been added or changed on another tab
+  if (tabId === 'notes' && typeof onNotesTabShown === 'function') onNotesTabShown();
+  if (tabId === 'characters' && typeof onCharactersTabShown === 'function') onCharactersTabShown();
 }
 
 function setupTabs() {
@@ -162,6 +168,8 @@ function registerServiceWorker() {
 
 // ── App init ───────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  Vault.load();          // shared NPC / place / item / … store (migrates old data once)
+  Characters.load();
   setupLanding();
   setupTabs();
   setupProUnlock();
@@ -171,6 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
   else applyProState();
   setupInitiativeUI();
   setupEncounterUI();
+  setupCharactersUI();
   setupNPCUI();
   setupLootUI();
   setupNotesUI();
