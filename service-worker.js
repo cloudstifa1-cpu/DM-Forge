@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dm-forge-v5';
+const CACHE_NAME = 'dm-forge-v6';
 const ASSETS = [
   './',
   './index.html',

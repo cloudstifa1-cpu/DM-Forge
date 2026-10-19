@@ -13,15 +13,17 @@
   --forge-muted:     #4f4840;
 
   /* Text */
-  --text-primary:    #e8dcc8;
-  --text-secondary:  #a89880;
-  --text-dim:        #6b6358;
+  --text-primary:    #f6eedf;
+  --text-secondary:  #ddd0b8;
+  --text-dim:        #bdb09a;
 
   /* Accents */
   --ember:           #c4622d;
   --ember-bright:    #e0743a;
   --ember-dim:       #7a3d1c;
-  --gold:            #b8952a;
+  --ember-btn:       #a8481a;
+  --ember-btn-hover: #b9531f;
+  --gold:            #e0bb4c;
   --gold-dim:        #7a6318;
 
   /* Semantic */
@@ -199,7 +201,7 @@ h1, h2, h3 {
   left: 20%;
   right: 20%;
   height: 2px;
-  background: var(--ember);
+  background: var(--ember-btn);
   border-radius: 0 0 2px 2px;
 }
 
@@ -214,7 +216,7 @@ h1, h2, h3 {
   right: calc(50% - 14px);
   width: 10px;
   height: 10px;
-  color: var(--gold-dim);
+  color: var(--gold);
 }
 
 /* ── Main Content ── */
@@ -318,11 +320,11 @@ h1, h2, h3 {
 }
 
 .btn-primary {
-  background: var(--ember);
+  background: var(--ember-btn);
   color: #fff;
 }
 
-.btn-primary:hover { background: var(--ember-bright); }
+.btn-primary:hover { background: var(--ember-btn-hover); }
 .btn-primary:active { background: var(--ember-dim); }
 
 .btn-secondary {
@@ -735,7 +737,7 @@ h1, h2, h3 {
   right: var(--gap-sm);
   width: 16px;
   height: 16px;
-  color: var(--gold-dim);
+  color: var(--gold);
 }
 
 /* Pro upsell panel */
@@ -887,7 +889,7 @@ h1, h2, h3 {
   font-size: .8rem;
   font-weight: 600;
   padding: 5px 12px;
-  background: var(--ember);
+  background: var(--ember-btn);
   color: #fff;
   border: none;
   border-radius: var(--radius-sm);
@@ -897,11 +899,11 @@ h1, h2, h3 {
   transition: background .15s;
 }
 
-.btn-inline-unlock:hover { background: var(--ember-bright); }
+.btn-inline-unlock:hover { background: var(--ember-btn-hover); }
 
 /* Pro tabs locked state */
 .nav-tab.pro-tab.pro-locked {
-  opacity: .5;
+  opacity: 1;
 }
 
 /* ============================================================
@@ -964,7 +966,7 @@ h1, h2, h3 {
 
 .npc-field span:last-child { color: var(--text-primary); }
 
-.npc-field.secret .npc-label { color: var(--ember-dim); }
+.npc-field.secret .npc-label { color: var(--ember-bright); }
 .npc-field.secret span:last-child { color: var(--text-secondary); font-style: italic; }
 
 .npc-actions {
@@ -1418,7 +1420,7 @@ body.app-launched .app-main { display: block; }
   gap: var(--gap-sm);
   width: 100%;
   min-height: 56px;
-  background: var(--ember);
+  background: var(--ember-btn);
   color: #fff;
   font-family: var(--font-display);
   font-size: 1.05rem;
@@ -1436,7 +1438,7 @@ body.app-launched .app-main { display: block; }
   height: 20px;
 }
 
-.btn-launch:hover { background: var(--ember-bright); }
+.btn-launch:hover { background: var(--ember-btn-hover); }
 .btn-launch:active { transform: scale(.98); }
 
 .btn-get-pro {
@@ -1554,7 +1556,7 @@ mark.lw-item:hover,     mark.lw-item:focus      { background: var(--lw-item-bg);
 .lw-highlight mark.lw-npc      { color: var(--lw-npc);  }
 .lw-highlight mark.lw-location { color: var(--lw-loc);  }
 .lw-highlight mark.lw-item     { color: var(--lw-item); }
-.lw-highlight .lw-ph           { color: #8f7d58; }
+.lw-highlight .lw-ph           { color: #d9bf7e; }
 
 /* Textarea sits on top, see-through: you only see its cursor and selection */
 .lw-textarea {
@@ -1570,7 +1572,7 @@ mark.lw-item:hover,     mark.lw-item:focus      { background: var(--lw-item-bg);
   overflow: hidden;
   min-height: 240px;
 }
-.lw-textarea::placeholder { color: var(--text-muted, #8a8172); -webkit-text-fill-color: var(--text-muted, #8a8172); }
+.lw-textarea::placeholder { color: var(--text-dim); -webkit-text-fill-color: var(--text-dim); }
 .lw-textarea::selection { background: rgba(232,176,74,.3); }
 .lw-textarea:focus { border-color: var(--ember) !important; outline: none; }
 
@@ -1616,7 +1618,7 @@ mark.lw-item:hover,     mark.lw-item:focus      { background: var(--lw-item-bg);
 .lw-ph-badge {
   position: absolute;
   top: -6px; right: -6px;
-  background: var(--ember);
+  background: var(--ember-btn);
   color: #fff;
   font-size: .6rem;
   font-weight: 700;
@@ -2003,7 +2005,7 @@ mark.lw { color: var(--c); border-bottom-color: transparent; }
 .ch-seg { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--forge-border); border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 8px; }
 .ch-seg-btn { min-height: 44px; font-size: .82rem; color: var(--text-secondary); border-right: 1px solid var(--forge-border); }
 .ch-seg-btn:last-child { border-right: none; }
-.ch-seg-btn.on { background: var(--ember); color: #fff; font-weight: 600; }
+.ch-seg-btn.on { background: var(--ember-btn); color: #fff; font-weight: 600; }
 
 .ch-points { font-size: .9rem; color: var(--text-secondary); margin: 6px 0 10px; }
 .ch-points b { color: var(--gold); font-size: 1.1rem; }
@@ -2036,7 +2038,7 @@ mark.lw { color: var(--c); border-bottom-color: transparent; }
   font-size: .72rem; font-weight: 700; color: var(--forge-void); background: #e8dcc8; border-radius: 4px;
   box-shadow: inset 0 -2px 0 rgba(0,0,0,.2);
 }
-.ch-die.dropped { background: var(--forge-muted); color: var(--text-dim); text-decoration: line-through; box-shadow: none; opacity: .7; }
+.ch-die.dropped { background: var(--forge-base); color: var(--text-dim); text-decoration: line-through; text-decoration-thickness: 2px; box-shadow: none; border: 1px dashed var(--text-dim); }
 .ch-stat.rolling .ch-die { animation: ch-tumble .12s linear infinite; }
 @keyframes ch-tumble { 0% { transform: rotate(-12deg) translateY(-1px); } 50% { transform: rotate(10deg) translateY(1px); } 100% { transform: rotate(-12deg) translateY(-1px); } }
 .ch-pb { display: flex; gap: 6px; margin-top: 6px; }
@@ -2102,5 +2104,5 @@ mark.lw { color: var(--c); border-bottom-color: transparent; }
   font-size: .95rem; line-height: normal; padding: 0 16px; color: var(--text-primary);
   border: 1px solid var(--forge-border); background: var(--forge-raised);
 }
-.lw-card-actions .btn-primary.lw-panel-close { background: var(--ember); border-color: var(--ember); color: #fff; }
+.lw-card-actions .btn-primary.lw-panel-close { background: var(--ember-btn); border-color: var(--ember); color: #fff; }
 .lw-panel .btn.lw-panel-close { font-size: .95rem; line-height: normal; min-height: 48px; }
