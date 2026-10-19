@@ -1,16 +1,16 @@
-const CACHE_NAME = 'dm-forge-v3';
+const CACHE_NAME = 'dm-forge-v4';
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/css/style.css',
-  '/js/app.js',
-  '/js/initiative.js',
-  '/js/encounter.js',
-  '/js/npc.js',
-  '/js/loot.js',
-  '/js/notes.js',
-  '/js/spells.js',
-  '/manifest.json',
+  './',
+  './index.html',
+  './css/style.css',
+  './js/app.js',
+  './js/initiative.js',
+  './js/encounter.js',
+  './js/npc.js',
+  './js/loot.js',
+  './js/notes.js',
+  './js/spells.js',
+  './manifest.json',
   'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;500;600&display=swap'
 ];
 
@@ -42,7 +42,7 @@ self.addEventListener('fetch', event => {
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request).catch(() =>
-        caches.match('/index.html')
+        caches.match('./index.html')
       )
     );
     return;

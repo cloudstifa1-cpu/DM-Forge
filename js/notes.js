@@ -453,6 +453,7 @@ function refreshHighlight() {
   if (!_highlightDiv || !_noteTextarea) return;
   const text = _noteTextarea.value;
   _highlightDiv.innerHTML = LinkedWords.highlight(text) + '<br>';
+  growNote();
   // Attach tap handlers to marks
   _highlightDiv.querySelectorAll('.lw').forEach(mark => {
     mark.addEventListener('click', () => {
@@ -660,10 +661,37 @@ function renderNoteEditor() {
     syncScroll();
   };
   contentEl.onscroll = syncScroll;
+
+  // Tap inside a highlighted name (not at its very edge) to open its card
+  contentEl.onclick = () => {
+    if (contentEl.selectionStart !== contentEl.selectionEnd) return;
+    const pos = contentEl.selectionStart;
+    let offset = 0;
+    for (const node of _highlightDiv.childNodes) {
+      const len = node.nodeName === 'BR' ? 0 : node.textContent.length;
+      if (node.nodeType === 1 && node.classList.contains('lw') && pos > offset && pos < offset + len) {
+        const ent = LinkedWords.getEntities().find(e =>
+          e.type === node.dataset.lwType && String(e.id) === String(node.dataset.lwId));
+        if (ent) { contentEl.blur(); openSlidePanel(ent); }
+        return;
+      }
+      offset += len;
+    }
+  };
+}
+
+// Grow the text box to fit its text so the colored overlay never scrolls out of line
+function growNote() {
+  if (!_noteTextarea) return;
+  const y = window.scrollY;
+  _noteTextarea.style.height = 'auto';
+  _noteTextarea.style.height = _noteTextarea.scrollHeight + 'px';
+  window.scrollTo(0, y);
 }
 
 function syncScroll() {
   if (!_noteTextarea || !_highlightDiv) return;
+  growNote();
   _highlightDiv.scrollTop = _noteTextarea.scrollTop;
 }
 

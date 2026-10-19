@@ -170,9 +170,14 @@ h1, h2, h3 {
   min-height: var(--touch-min);
   padding: var(--gap-sm) 0;
   color: var(--text-dim);
-  font-size: .65rem;
-  letter-spacing: .04em;
-  font-family: var(--font-display);
+  font-size: .62rem;
+  letter-spacing: 0;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   transition: color .15s;
   position: relative;
 }
@@ -866,6 +871,8 @@ h1, h2, h3 {
   color: var(--text-secondary);
 }
 
+.pro-lock-banner[hidden] { display: none !important; }
+
 .pro-lock-banner svg {
   width: 16px;
   height: 16px;
@@ -1508,44 +1515,64 @@ mark.lw-item:hover,     mark.lw-item:focus      { background: var(--lw-item-bg);
   width: 100%;
 }
 
+.lw-editor-wrap {
+  background: var(--forge-raised);
+  border-radius: var(--radius-sm);
+}
+
+/* Overlay and textarea share these exact text metrics so they line up */
+.lw-highlight,
+.lw-textarea {
+  font-family: var(--font-ui) !important;
+  font-size: 1rem !important;
+  line-height: 1.65 !important;
+  letter-spacing: normal !important;
+  padding: 10px 12px !important;
+  border: 1px solid var(--forge-border) !important;
+  border-radius: var(--radius-sm);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: normal;
+  box-sizing: border-box;
+  margin: 0;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Overlay draws ALL the text, with linked words colored */
 .lw-highlight {
   position: absolute;
   inset: 0;
-  pointer-events: none;   /* highlights only; textarea takes events */
+  pointer-events: none;
   overflow: hidden;
-  white-space: pre-wrap;
-  word-break: break-word;
-  word-wrap: break-word;
-  color: transparent;     /* hide text; only marks are visible */
-  border-color: transparent !important;
+  color: var(--text-primary);
   background: transparent !important;
   z-index: 1;
-  /* Must match textarea exactly */
-  font-family: var(--font-ui);
-  font-size: 1rem;
-  line-height: 1.65;
-  padding: 10px 12px;
-  resize: none;
 }
-
-/* Marks inside highlight ARE visible (color set above) */
-.lw-highlight mark.lw {
-  /* override transparent text for mark children */
-  color: var(--lw-npc);
-}
+.lw-highlight mark { background: transparent; text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
 .lw-highlight mark.lw-npc      { color: var(--lw-npc);  }
 .lw-highlight mark.lw-location { color: var(--lw-loc);  }
 .lw-highlight mark.lw-item     { color: var(--lw-item); }
+.lw-highlight .lw-ph           { color: #8f7d58; }
 
+/* Textarea sits on top, see-through: you only see its cursor and selection */
 .lw-textarea {
   position: relative;
+  display: block;
+  width: 100%;
   z-index: 2;
   background: transparent !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent;
   caret-color: var(--text-primary);
-  color: var(--text-primary);
-  resize: vertical;
-  min-height: 220px;
+  resize: none;
+  overflow: hidden;
+  min-height: 240px;
 }
+.lw-textarea::placeholder { color: var(--text-muted, #8a8172); -webkit-text-fill-color: var(--text-muted, #8a8172); }
+.lw-textarea::selection { background: rgba(232,176,74,.3); }
+.lw-textarea:focus { border-color: var(--ember) !important; outline: none; }
 
 /* ── Toolbar ── */
 .lw-toolbar {

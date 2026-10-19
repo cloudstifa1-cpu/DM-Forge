@@ -146,7 +146,7 @@ function setupProUnlock() {
 // ── Service Worker ─────────────────────────────────────────
 function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
-  navigator.serviceWorker.register('/service-worker.js').then(reg => {
+  navigator.serviceWorker.register('service-worker.js').then(reg => {
     reg.addEventListener('updatefound', () => {
       const newWorker = reg.installing;
       newWorker.addEventListener('statechange', () => {

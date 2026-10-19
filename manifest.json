@@ -2,7 +2,7 @@
   "name": "DM Forge",
   "short_name": "DM Forge",
   "description": "Dungeon Master toolkit — initiative, encounters, and more",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#1a1612",
   "theme_color": "#1a1612",
@@ -25,12 +25,12 @@
   "shortcuts": [
     {
       "name": "Initiative Tracker",
-      "url": "/?tab=initiative",
+      "url": "./?tab=initiative",
       "description": "Track combat turn order"
     },
     {
       "name": "Encounter Builder",
-      "url": "/?tab=encounter",
+      "url": "./?tab=encounter",
       "description": "Build and balance encounters"
     }
   ]
