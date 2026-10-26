@@ -2174,3 +2174,46 @@ mark.lw { color: var(--c); border-bottom-color: transparent; }
 }
 .ch-stat-input:focus { border-color: var(--ember); outline: none; }
 #party-init-btn { white-space: nowrap; }
+
+/* ══════════════════════════════════════════════════════════════
+   Monsters tab
+   ══════════════════════════════════════════════════════════════ */
+.mon-seg { margin-bottom: 14px; }
+.mon-enc-count:not(:empty) { display: inline-block; min-width: 20px; padding: 0 5px; margin-left: 2px; border-radius: 10px; background: var(--gold); color: var(--forge-void); font-weight: 700; font-size: .75rem; }
+.mon-count { font-size: .8rem; font-weight: 600; color: var(--text-secondary); margin: 4px 0 8px; }
+.mon-row {
+  display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; text-align: left; cursor: pointer;
+  padding: 8px 12px; margin-bottom: 8px; background: var(--forge-surface); color: inherit;
+  border: 1px solid var(--forge-border); border-left: 3px solid #8fcf6a; border-radius: var(--radius-sm);
+}
+.mon-row:active { background: var(--forge-raised); }
+.mon-cr { display: flex; flex-direction: column; align-items: center; width: 40px; flex-shrink: 0; font-size: .62rem; font-weight: 700; letter-spacing: .06em; color: var(--text-secondary); }
+.mon-cr b { font-family: var(--font-display); font-size: 1.05rem; color: var(--gold); letter-spacing: 0; }
+.mon-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.mon-name { font-weight: 600; font-size: .98rem; color: #8fcf6a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mon-tag { font-size: .62rem; font-weight: 700; color: var(--forge-void); background: #8fcf6a; padding: 1px 5px; border-radius: 3px; vertical-align: 2px; }
+.mon-sub { font-size: .76rem; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mon-nums { font-size: .72rem; color: var(--text-secondary); text-align: right; line-height: 1.5; flex-shrink: 0; }
+.mon-nums b { color: var(--text-primary); font-size: .88rem; }
+.mon-credit { font-size: .72rem; color: var(--text-dim); margin: 18px 0 8px; line-height: 1.5; }
+
+.mon-sheet { max-height: 88vh; }
+.mon-title { color: #8fcf6a; font-size: 1.15rem; }
+.mon-boxes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 12px; }
+.mon-line { font-size: .88rem; color: var(--text-primary); line-height: 1.5; margin-bottom: 4px; }
+.mon-line b { color: var(--gold); font-weight: 600; }
+.mon-abil { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin: 12px 0; }
+.mon-abil div { display: flex; flex-direction: column; align-items: center; padding: 6px 0; background: var(--forge-raised); border: 1px solid var(--forge-border); border-radius: var(--radius-sm); }
+.mon-abil small { font-size: .62rem; font-weight: 700; color: var(--text-secondary); letter-spacing: .05em; }
+.mon-abil b { font-size: 1rem; color: var(--text-primary); }
+.mon-abil span { font-size: .72rem; color: var(--gold); font-weight: 600; }
+.mon-sec { font-family: var(--font-display); font-size: .9rem; font-weight: 700; color: var(--ember-bright); border-bottom: 1px solid var(--forge-border); padding-bottom: 4px; margin: 16px 0 8px; letter-spacing: .04em; }
+.mon-act { font-size: .88rem; color: var(--text-primary); line-height: 1.55; margin: 0 0 8px; }
+.mon-act b { color: var(--text-primary); }
+.mon-add { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--forge-border); display: flex; flex-direction: column; gap: 8px; }
+.mon-count-row { display: flex; align-items: center; gap: 10px; justify-content: center; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.mon-two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.monster-link { background: none; border: 0; padding: 4px 0; text-align: left; color: #8fcf6a; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.enc-actions { display: grid; grid-template-columns: 2fr 1fr; gap: 8px; margin-bottom: 16px; }
+.enc-party-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }

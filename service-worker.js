@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dm-forge-v8';
+const CACHE_NAME = 'dm-forge-v9';
 const ASSETS = [
   './',
   './index.html',
@@ -7,6 +7,8 @@ const ASSETS = [
   './js/quests.js',
   './js/initiative.js',
   './js/encounter.js',
+  './js/monsters.js',
+  './data/monsters.json',
   './js/vault.js',
   './js/npc.js',
   './js/characters.js',

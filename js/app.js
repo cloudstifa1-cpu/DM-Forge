@@ -73,6 +73,7 @@ function applyProState() {
   });
   // Characters tab is free, but its portrait builder and pre-made heroes are Pro
   if (typeof onCharactersProChange === 'function') onCharactersProChange();
+  if (typeof onMonstersProChange === 'function') onMonstersProChange();
   // Update dev badge
   const badge = document.getElementById('dev-pro-badge');
   if (badge) {
@@ -180,6 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
   else applyProState();
   setupInitiativeUI();
   setupEncounterUI();
+  setupMonstersUI();
   setupCharactersUI();
   setupNPCUI();
   setupLootUI();

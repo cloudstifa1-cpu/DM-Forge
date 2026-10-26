@@ -246,15 +246,22 @@
     </section>
 
     <!-- Encounter Builder -->
-    <section class="tab-panel" id="tab-encounter" role="tabpanel" aria-label="Encounter Builder">
+    <section class="tab-panel" id="tab-encounter" role="tabpanel" aria-label="Monsters">
       <div class="section-head">
-        <h2>Encounter Builder</h2>
-        <p>Estimate encounter difficulty using 5e XP thresholds.</p>
+        <h2>Monsters</h2>
+        <p>Find a monster, make your own, and build the fight.</p>
       </div>
+      <div class="ch-seg mon-seg" role="tablist" aria-label="Monster views">
+        <button class="ch-seg-btn mon-seg-btn on" data-view="list" role="tab" aria-selected="true">Monster list</button>
+        <button class="ch-seg-btn mon-seg-btn" data-view="mine" role="tab" aria-selected="false">Homemade</button>
+        <button class="ch-seg-btn mon-seg-btn" data-view="encounter" role="tab" aria-selected="false">Encounter <span class="mon-enc-count" id="mon-enc-count"></span></button>
+      </div>
+      <div id="mon-root"></div>
+      <div id="enc-view" hidden>
 
       <!-- Party config -->
       <div class="panel">
-        <div class="add-form-title" style="margin-bottom:12px">Party</div>
+        <div class="add-form-title enc-party-head" style="margin-bottom:12px">Party <button class="ch-mini-btn" id="enc-use-party">Use this quest's heroes</button></div>
         <div class="party-config">
           <div class="field-group">
             <label for="party-size">Players</label>
@@ -284,9 +291,10 @@
         <!-- Populated by JS -->
       </div>
 
-      <button class="btn btn-secondary" id="clear-encounter-btn" style="margin-bottom:16px">
-        Clear Encounter
-      </button>
+      <div class="enc-actions">
+        <button class="btn btn-primary" id="enc-to-init-btn">Start the fight</button>
+        <button class="btn btn-secondary" id="clear-encounter-btn">Clear</button>
+      </div>
 
       <hr class="divider">
 
@@ -312,6 +320,7 @@
           Add Monster
         </button>
       </div>
+      </div><!-- /enc-view -->
     </section>
 
     <!-- Characters (free; portrait builder + pre-mades are Pro) -->
@@ -483,11 +492,11 @@
       Initiative
     </button>
 
-    <button class="nav-tab" role="tab" data-tab="encounter" aria-label="Encounter Builder">
+    <button class="nav-tab" role="tab" data-tab="encounter" aria-label="Monsters">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
         <path d="M12 2a5 5 0 015 5c0 2.5-1.5 4-3 5l1.5 10H8.5L10 12c-1.5-1-3-2.5-3-5a5 5 0 015-5z"/>
       </svg>
-      Encounter
+      Monsters
     </button>
 
     <button class="nav-tab" role="tab" data-tab="characters" aria-label="Characters">
@@ -532,6 +541,7 @@
   <script src="js/quests.js"></script>
   <script src="js/initiative.js"></script>
   <script src="js/encounter.js"></script>
+  <script src="js/monsters.js"></script>
   <script src="js/vault.js"></script>
   <script src="js/npc.js"></script>
   <script src="js/loot.js"></script>

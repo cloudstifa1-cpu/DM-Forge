@@ -76,11 +76,14 @@ const Encounter = (() => {
     }
   }
 
-  function addMonster({ name, cr }) {
+  function addMonster({ name, cr, ref, hp, ac, dex }) {
     const xp = CR_XP[cr] ?? 0;
-    monsters.push({ id: nextId++, name: name.trim() || 'Unknown Monster', cr, xp });
+    const m = { id: nextId++, name: name.trim() || 'Unknown Monster', cr, xp };
+    if (ref) Object.assign(m, { ref, hp, ac, dex: dex || 0 });   // linked to a monster-list stat block
+    monsters.push(m);
     save();
   }
+  function xpFor(cr) { return CR_XP[cr] ?? 0; }
 
   function removeMonster(id) {
     monsters = monsters.filter(m => m.id !== id);
@@ -127,7 +130,7 @@ const Encounter = (() => {
     return { monsters, party, crOptions: Object.keys(CR_XP) };
   }
 
-  return { load, save, addMonster, removeMonster, setParty, getDifficulty, clearAll, getState };
+  return { load, save, addMonster, removeMonster, setParty, getDifficulty, clearAll, getState, xpFor };
 })();
 
 // ── UI ──────────────────────────────────────────────────────
@@ -168,7 +171,7 @@ function renderEncounter() {
     card.className = 'monster-card';
     card.innerHTML = `
       <span class="monster-cr">CR ${m.cr}</span>
-      <span class="monster-name">${escHtml(m.name)}</span>
+      ${m.ref ? `<button class="monster-name monster-link" data-ref="${m.ref}">${escHtml(m.name)}</button>` : `<span class="monster-name">${escHtml(m.name)}</span>`}
       <span class="monster-xp">${m.xp.toLocaleString()} XP</span>
       <button class="icon-btn remove" data-id="${m.id}" aria-label="Remove ${escHtml(m.name)}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -179,6 +182,12 @@ function renderEncounter() {
     card.querySelector('.icon-btn.remove').addEventListener('click', () => {
       Encounter.removeMonster(m.id);
       renderEncounter();
+      if (typeof updateEncCount === 'function') updateEncCount();
+    });
+    const link = card.querySelector('.monster-link');
+    if (link) link.addEventListener('click', () => {
+      if (Monsters.byKey(m.ref)) openMonsterSheet(m.ref);
+      else Monsters.loadSRD().then(() => openMonsterSheet(m.ref)).catch(() => showToast('Stat block not available offline yet.'));
     });
     list.appendChild(card);
   });
@@ -223,6 +232,7 @@ function setupEncounterUI() {
 
     Encounter.addMonster({ name, cr });
     renderEncounter();
+    if (typeof updateEncCount === 'function') updateEncCount();
     document.getElementById('monster-name').value = '';
     document.getElementById('monster-name').focus();
   });
@@ -231,11 +241,35 @@ function setupEncounterUI() {
     if (e.key === 'Enter') document.getElementById('add-monster-btn').click();
   });
 
+  // Put every monster in this encounter into the initiative tracker
+  document.getElementById('enc-to-init-btn').addEventListener('click', () => {
+    const list = Encounter.getState().monsters;
+    if (!list.length) { showToast('Add some monsters first.'); return; }
+    const groups = {};
+    list.forEach(m => { (groups[m.name] = groups[m.name] || []).push(m); });
+    let n = 0;
+    Object.keys(groups).forEach(name => {
+      const g = groups[name], f = g[0];
+      n += addMonstersToInitiative({ n: name, hp: f.hp || null, st: [10, 10 + 2 * (f.dex || 0)] }, g.length).length;
+    });
+    showToast(n + ' monster' + (n === 1 ? '' : 's') + ' joined the fight. Open Initiative to run it.');
+  });
+  // Fill party size and level from the heroes in this quest
+  document.getElementById('enc-use-party').addEventListener('click', () => {
+    const party = partyCharacters();
+    if (!party.length) { showToast('No heroes in this quest yet.'); return; }
+    const avg = Math.round(party.reduce((s, c) => s + (c.level || 1), 0) / party.length);
+    Encounter.setParty(party.length, avg);
+    renderEncounter();
+    showToast('Party set to ' + party.length + ' heroes, level ' + avg + '.');
+  });
+
   document.getElementById('clear-encounter-btn').addEventListener('click', () => {
     if (Encounter.getState().monsters.length === 0) return;
     if (confirm('Clear all monsters from this encounter?')) {
       Encounter.clearAll();
       renderEncounter();
+      if (typeof updateEncCount === 'function') updateEncCount();
     }
   });
 }
