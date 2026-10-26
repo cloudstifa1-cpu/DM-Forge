@@ -171,6 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
   Vault.load();          // shared NPC / place / item / … store (migrates old data once)
   Characters.load();
   setupLanding();
+  setupQuestsUI();
   setupTabs();
   setupProUnlock();
   setupDevProToggle();

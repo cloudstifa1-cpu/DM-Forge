@@ -1,9 +1,10 @@
-const CACHE_NAME = 'dm-forge-v7';
+const CACHE_NAME = 'dm-forge-v8';
 const ASSETS = [
   './',
   './index.html',
   './css/style.css',
   './js/app.js',
+  './js/quests.js',
   './js/initiative.js',
   './js/encounter.js',
   './js/vault.js',
@@ -13,6 +14,8 @@ const ASSETS = [
   './js/notes.js',
   './js/spells.js',
   './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
   'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;500;600&display=swap'
 ];
 

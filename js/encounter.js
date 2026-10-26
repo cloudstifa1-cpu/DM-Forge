@@ -59,13 +59,13 @@ const Encounter = (() => {
 
   function save() {
     try {
-      localStorage.setItem('dmforge_encounter', JSON.stringify({ monsters, party, nextId }));
+      localStorage.setItem(Quests.key('encounter'), JSON.stringify({ monsters, party, nextId }));
     } catch (e) {}
   }
 
   function load() {
     try {
-      const raw = localStorage.getItem('dmforge_encounter');
+      const raw = localStorage.getItem(Quests.key('encounter'));
       if (!raw) return;
       const data = JSON.parse(raw);
       monsters = data.monsters || [];

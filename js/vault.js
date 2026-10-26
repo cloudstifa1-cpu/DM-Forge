@@ -58,7 +58,7 @@ const FIELD_DEFS = {
 };
 
 const Vault = (() => {
-  const KEY = 'dmforge_vault';
+  const KEY = Quests.key('vault');
   let entries = [];
   let nextId = 1;
 
@@ -96,7 +96,7 @@ const Vault = (() => {
       nextId = d.nextId || (entries.reduce((m, e) => Math.max(m, e.id), 0) + 1);
     } else {
       entries = []; nextId = 1;
-      migrate();
+      if (Quests.isLegacy()) migrate();   // old NPC/place/item stores belong to the first quest only
       persist();
     }
     entries.forEach(e => {

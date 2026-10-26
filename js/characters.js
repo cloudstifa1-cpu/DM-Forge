@@ -299,6 +299,7 @@ function npcTable(k, fallback) {
 
 /* ── Rules: derived numbers ────────────────────────────────── */
 function racialBonus(ch) {
+  if (ch.method === 'entered') return {};      // typed-in scores already include racial bonuses
   const r = CH_RACES[ch.race] || CH_RACES.human;
   const b = Object.assign({}, r.bonus);
   if (r.flex) {
@@ -321,13 +322,27 @@ function derived(ch) {
   const con = modOf(sc.con), dex = modOf(sc.dex), wis = modOf(sc.wis);
   let hp = Math.max(1, cls.hd + con);
   for (let i = 2; i <= lvl; i++) hp += Math.max(1, Math.floor(cls.hd / 2) + 1 + con);
+  const entered = ch.method === 'entered';
+  if (entered && ch.hpMax > 0) hp = ch.hpMax;
   return {
-    scores: sc, hp, ac: 10 + dex, init: dex, speed: race.speed, prof: 2 + Math.floor((lvl - 1) / 4),
+    scores: sc, hp,
+    ac: entered && ch.acOverride > 0 ? ch.acOverride : 10 + dex,
+    init: dex,
+    speed: entered && ch.speedOverride > 0 ? ch.speedOverride : race.speed, prof: 2 + Math.floor((lvl - 1) / 4),
     passive: 10 + wis, hd: cls.hd, saves: cls.saves, level: lvl
   };
 }
 function subtitleOf(ch) {
-  return 'Level ' + (ch.level || 1) + ' ' + ((CH_RACES[ch.race] || {}).label || '') + ' ' + ((CH_CLASSES[ch.cls] || {}).label || '');
+  const race = ch.raceLabel || (CH_RACES[ch.race] || {}).label || '';
+  const cls = ch.clsLabel || (CH_CLASSES[ch.cls] || {}).label || '';
+  return ('Level ' + (ch.level || 1) + ' ' + race + ' ' + cls).replace(/\s+/g, ' ').trim();
+}
+// Match typed race/class text to the built-in lists (for hit dice, speed and portrait looks)
+function keyFromText(table, text, fallback) {
+  const t = String(text || '').trim().toLowerCase();
+  if (!t) return fallback;
+  const k = Object.keys(table).find(k => k === t || String(table[k].label || '').toLowerCase() === t);
+  return k || fallback;
 }
 
 /* ── Stat methods ──────────────────────────────────────────── */
@@ -455,10 +470,15 @@ const Characters = (() => {
     c.createdAt = c.updatedAt = new Date().toISOString();
     list.unshift(c);
     persist();
+    if (typeof Quests !== 'undefined') Quests.addToParty(c.id);   // new heroes join the quest being played
     return c;
   }
   function touch(ch) { ch.updatedAt = new Date().toISOString(); return persist(); }
-  function remove(id) { list = list.filter(c => c.id !== id); persist(); }
+  function remove(id) {
+    list = list.filter(c => c.id !== id);
+    persist();
+    if (typeof Quests !== 'undefined') Quests.forgetCharacter(id);
+  }
   function get(id) { return list.find(c => c.id === id) || null; }
   function getAll() { return list; }
 
@@ -473,7 +493,8 @@ const ICON_LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 const ICON_BACK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 19l-7-7 7-7"/></svg>';
 
 const chUI = {
-  view: 'list',         // 'list' | 'sheet' | 'premade'
+  view: 'list',         // 'list' | 'sheet' | 'premade' | 'enter'
+  genOpen: false,       // "Roll a new character" box expanded
   draft: null,          // unsaved generated character
   currentId: null,      // saved character open in the sheet
   gen: { race: '', cls: '', background: '', method: 'roll' },
@@ -517,20 +538,42 @@ function renderCharacters() {
   if (!root) return;
   if (chUI.view === 'sheet' && chCurrent()) renderSheet();
   else if (chUI.view === 'premade') renderPremade();
+  else if (chUI.view === 'enter') renderEnter();
   else { chUI.view = 'list'; renderCharList(); }
+}
+
+function charRowHTML(ch, inQuest) {
+  const d = derived(ch);
+  return `<div class="ch-row-wrap">
+    <button class="ch-row" data-id="${ch.id}">
+      <span class="ch-thumb">${portraitHTML(ch)}</span>
+      <span class="ch-row-info">
+        <span class="ch-row-name">${escHtml(ch.name || 'Unnamed')}</span>
+        <span class="ch-row-sub">${escHtml(subtitleOf(ch))}</span>
+      </span>
+      <span class="ch-row-stats"><b>${d.hp}</b> HP<br><b>${d.ac}</b> AC</span>
+    </button>
+    <button class="ch-party-btn${inQuest ? ' out' : ''}" data-id="${ch.id}" data-act="${inQuest ? 'remove' : 'add'}"
+      aria-label="${inQuest ? 'Remove ' + escHtml(ch.name || 'character') + ' from this quest' : 'Add ' + escHtml(ch.name || 'character') + ' to this quest'}">${inQuest ? 'Remove' : '+ Add'}</button>
+  </div>`;
 }
 
 function renderCharList() {
   const g = chUI.gen;
-  const list = Characters.getAll();
+  const all = Characters.getAll();
+  const party = all.filter(c => Quests.inParty(c.id));
+  const others = all.filter(c => !Quests.inParty(c.id));
+  const q = Quests.current();
   chRoot().innerHTML = `
     <div class="section-head">
-      <h2>Characters</h2>
-      <p>Player characters for your table. Roll real dice, or start from a ready-made hero.</p>
+      <h2>Heroes</h2>
+      <p>Already have a character? Enter it in a minute. Or roll a new one with real dice.</p>
     </div>
 
-    <div class="panel ch-gen">
-      <div class="add-form-title">Roll a new character</div>
+    <button class="btn btn-primary btn-full ch-big-btn" id="ch-enter">Enter my character</button>
+
+    <details class="panel ch-gen" id="ch-gen-box"${chUI.genOpen ? ' open' : ''}>
+      <summary class="ch-gen-sum">${ICON_DIE} Roll a new character</summary>
       <div class="ch-grid2">
         <div class="field-group"><label for="ch-g-race">Race</label>
           <select class="field-input cr-select" id="ch-g-race"><option value="">Random</option>${optionList(raceOpts(), g.race)}</select></div>
@@ -542,30 +585,28 @@ function renderCharList() {
           <select class="field-input cr-select" id="ch-g-method">${optionList([['roll', 'Roll 4d6'], ['array', 'Standard array'], ['pointbuy', 'Point buy']], g.method)}</select></div>
       </div>
       <button class="btn btn-primary btn-full ch-big-btn" id="ch-roll-new">${ICON_DIE} Roll Character</button>
-    </div>
+    </details>
 
     <button class="btn btn-secondary btn-full ch-premade-btn" id="ch-open-premade">
       Pre-made heroes ${isProUnlocked() ? '' : '<span class="ch-pro-tag">PRO</span>'}
     </button>
 
-    <div class="add-form-title" style="margin:var(--gap-lg) 0 8px">Your party</div>
+    <div class="add-form-title ch-list-title">In this quest <span class="ch-quest-tag">${escHtml(q ? q.name : '')}</span></div>
     <div id="ch-list">
-      ${list.length ? list.map(ch => {
-        const d = derived(ch);
-        return `<button class="ch-row" data-id="${ch.id}">
-          <span class="ch-thumb">${portraitHTML(ch)}</span>
-          <span class="ch-row-info">
-            <span class="ch-row-name">${escHtml(ch.name || 'Unnamed')}</span>
-            <span class="ch-row-sub">${escHtml(subtitleOf(ch))}</span>
-          </span>
-          <span class="ch-row-stats"><b>${d.hp}</b> HP<br><b>${d.ac}</b> AC</span>
-        </button>`;
-      }).join('') : '<p class="saved-empty">No characters yet. Roll one above.</p>'}
+      ${party.length ? party.map(ch => charRowHTML(ch, true)).join('')
+        : '<p class="saved-empty">No heroes in this quest yet. Enter one above, or add one of your other characters below.</p>'}
     </div>
+
+    ${others.length ? `<div class="add-form-title ch-list-title">Your other characters</div>
+    <div id="ch-list-others">${others.map(ch => charRowHTML(ch, false)).join('')}</div>` : ''}
   `;
 
   const bind = (id, key) => document.getElementById(id).addEventListener('change', e => { chUI.gen[key] = e.target.value; });
   bind('ch-g-race', 'race'); bind('ch-g-class', 'cls'); bind('ch-g-bg', 'background'); bind('ch-g-method', 'method');
+  document.getElementById('ch-gen-box').addEventListener('toggle', e => { chUI.genOpen = e.target.open; });
+  document.getElementById('ch-enter').addEventListener('click', () => {
+    chUI.view = 'enter'; renderCharacters(); chScrollTop();
+  });
   document.getElementById('ch-roll-new').addEventListener('click', () => {
     chUI.draft = generateCharacter(chUI.gen);
     chUI.currentId = null;
@@ -581,13 +622,90 @@ function renderCharList() {
   chRoot().querySelectorAll('.ch-row').forEach(row => {
     row.addEventListener('click', () => openCharacterSheet(Number(row.dataset.id)));
   });
+  chRoot().querySelectorAll('.ch-party-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.id);
+      const ch = Characters.get(id);
+      if (btn.dataset.act === 'add') { Quests.addToParty(id); showToast((ch && ch.name || 'Character') + ' joined this quest.'); }
+      else { Quests.removeFromParty(id); showToast((ch && ch.name || 'Character') + ' left this quest. They are still saved.'); }
+      if (typeof linksChanged === 'function') linksChanged();
+      renderCharList();
+    });
+  });
+}
+
+/* ── Enter my character (for heroes made on paper or elsewhere) ── */
+function renderEnter() {
+  const raceList = Object.keys(CH_RACES).map(k => `<option value="${escHtml(CH_RACES[k].label)}">`).join('');
+  const clsList = Object.keys(CH_CLASSES).map(k => `<option value="${escHtml(CH_CLASSES[k].label)}">`).join('');
+  chRoot().innerHTML = `
+    <div class="ch-topbar">
+      <button class="ch-back" id="ch-back">${ICON_BACK} Heroes</button>
+      <span class="ch-topbar-title">Enter my character</span>
+    </div>
+    <p class="ch-note">Copy it from your sheet. Only the name is needed — fill in the rest now or later.</p>
+
+    <div class="field-group ch-field"><label for="en-name">Name</label>
+      <input class="field-input" id="en-name" type="text" maxlength="60" autocomplete="off" placeholder="Character name"></div>
+    <div class="ch-grid2">
+      <div class="field-group"><label for="en-race">Race</label>
+        <input class="field-input" id="en-race" type="text" maxlength="40" list="en-race-list" autocomplete="off" placeholder="e.g. Elf"><datalist id="en-race-list">${raceList}</datalist></div>
+      <div class="field-group"><label for="en-class">Class</label>
+        <input class="field-input" id="en-class" type="text" maxlength="40" list="en-class-list" autocomplete="off" placeholder="e.g. Ranger"><datalist id="en-class-list">${clsList}</datalist></div>
+    </div>
+
+    <div class="ch-grid3">
+      <div class="field-group"><label for="en-level">Level</label><input class="field-input en-num" id="en-level" type="number" inputmode="numeric" min="1" max="20" value="1"></div>
+      <div class="field-group"><label for="en-hp">Max HP</label><input class="field-input en-num" id="en-hp" type="number" inputmode="numeric" min="1" max="999" placeholder="auto"></div>
+      <div class="field-group"><label for="en-ac">AC</label><input class="field-input en-num" id="en-ac" type="number" inputmode="numeric" min="1" max="40" placeholder="auto"></div>
+      <div class="field-group"><label for="en-speed">Speed</label><input class="field-input en-num" id="en-speed" type="number" inputmode="numeric" min="0" max="200" step="5" placeholder="30"></div>
+    </div>
+
+    <div class="ch-sec-title">Ability scores</div>
+    <div class="ch-grid3">
+      ${STATS.map(k => `<div class="field-group"><label for="en-${k}">${STAT_LABEL[k]}</label>
+        <input class="field-input en-num en-stat" id="en-${k}" type="number" inputmode="numeric" min="1" max="30" value="10"></div>`).join('')}
+    </div>
+
+    <div class="field-group ch-field"><label for="en-notes">Notes <span class="ch-hint">— backstory, gear, anything</span></label>
+      <textarea class="field-input ch-ta" id="en-notes" rows="3" maxlength="3000"></textarea></div>
+
+    <div class="ch-sticky"><button class="btn btn-primary btn-full ch-big-btn" id="en-save">Save to this quest</button></div>
+  `;
+  const $ = id => document.getElementById(id);
+  setTimeout(() => $('en-name').focus(), 50);
+  $('ch-back').addEventListener('click', chBackToList);
+  const num = (id, lo, hi) => { const v = parseInt($(id).value, 10); return isNaN(v) ? null : Math.max(lo, Math.min(hi, v)); };
+  $('en-save').addEventListener('click', () => {
+    const name = $('en-name').value.trim();
+    if (!name) { showToast('Give your character a name.'); $('en-name').focus(); return; }
+    const raceText = $('en-race').value.trim(), clsText = $('en-class').value.trim();
+    const race = keyFromText(CH_RACES, raceText, 'human');
+    const cls = keyFromText(CH_CLASSES, clsText, 'fighter');
+    const base = {};
+    STATS.forEach(k => { base[k] = num('en-' + k, 1, 30) || 10; });
+    const ch = {
+      name, aliases: [], race, cls,
+      raceLabel: raceText ? (CH_RACES[race] && CH_RACES[race].label.toLowerCase() === raceText.toLowerCase() ? '' : raceText) : '',
+      clsLabel: clsText ? (CH_CLASSES[cls] && CH_CLASSES[cls].label.toLowerCase() === clsText.toLowerCase() ? '' : clsText) : '',
+      background: '', alignment: '', level: num('en-level', 1, 20) || 1,
+      method: 'entered', base, dice: null,
+      hpMax: num('en-hp', 1, 999), acOverride: num('en-ac', 1, 40), speedOverride: num('en-speed', 0, 200),
+      trait: '', ideal: '', bond: '', flaw: '', backstory: $('en-notes').value,
+      portrait: randomLook(race), photo: null, hpCur: null
+    };
+    const saved = Characters.add(ch);
+    if (typeof linksChanged === 'function') linksChanged();
+    showToast(saved.name + ' joined ' + (Quests.current() ? Quests.current().name : 'your quest') + '.');
+    openCharacterSheet(saved.id);
+  });
 }
 
 function renderPremade() {
   const pro = isProUnlocked();
   chRoot().innerHTML = `
     <div class="ch-topbar">
-      <button class="ch-back" id="ch-back">${ICON_BACK} Party</button>
+      <button class="ch-back" id="ch-back">${ICON_BACK} Heroes</button>
       <span class="ch-topbar-title">Pre-made heroes</span>
     </div>
     ${pro ? '' : `<div class="pro-lock-banner">${ICON_LOCK}<span>Pre-made heroes are Pro</span><button class="btn-inline-unlock js-unlock-pro">Unlock — $2.99</button></div>`}
@@ -621,7 +739,7 @@ function renderPremade() {
       delete copy.key;
       Object.assign(copy, { level: 1, method: 'array', dice: null, photo: null, hpCur: null, premade: p.key });
       const saved = Characters.add(copy);
-      showToast(saved.name + ' joined your party.');
+      showToast(saved.name + ' joined this quest.');
       openCharacterSheet(saved.id);
     });
   });
@@ -643,9 +761,11 @@ function renderSheet() {
   const ch = chCurrent();
   const isDraft = !!chUI.draft;
   const pro = isProUnlocked();
+  const entered = ch.method === 'entered';
+  const blankOpt = v => (v ? '' : '<option value="" selected>—</option>');
   chRoot().innerHTML = `
     <div class="ch-topbar">
-      <button class="ch-back" id="ch-back">${ICON_BACK} Party</button>
+      <button class="ch-back" id="ch-back">${ICON_BACK} Heroes</button>
       <span class="ch-topbar-title">${isDraft ? 'New character' : 'Character sheet'}</span>
     </div>
 
@@ -668,14 +788,21 @@ function renderSheet() {
     </div>
 
     <div class="ch-grid2">
+      ${entered ? `
+      <div class="field-group"><label for="ch-race-t">Race</label>
+        <input class="field-input" id="ch-race-t" type="text" maxlength="40" list="ch-race-list" autocomplete="off" value="${escHtml(ch.raceLabel || (CH_RACES[ch.race] || {}).label || '')}">
+        <datalist id="ch-race-list">${Object.keys(CH_RACES).map(k => `<option value="${escHtml(CH_RACES[k].label)}">`).join('')}</datalist></div>
+      <div class="field-group"><label for="ch-class-t">Class</label>
+        <input class="field-input" id="ch-class-t" type="text" maxlength="40" list="ch-class-list" autocomplete="off" value="${escHtml(ch.clsLabel || (CH_CLASSES[ch.cls] || {}).label || '')}">
+        <datalist id="ch-class-list">${Object.keys(CH_CLASSES).map(k => `<option value="${escHtml(CH_CLASSES[k].label)}">`).join('')}</datalist></div>` : `
       <div class="field-group"><label for="ch-race">Race</label>
         <select class="field-input cr-select" id="ch-race">${optionList(raceOpts(), ch.race)}</select></div>
       <div class="field-group"><label for="ch-class">Class</label>
-        <select class="field-input cr-select" id="ch-class">${optionList(classOpts(), ch.cls)}</select></div>
+        <select class="field-input cr-select" id="ch-class">${optionList(classOpts(), ch.cls)}</select></div>`}
       <div class="field-group"><label for="ch-bg">Background</label>
-        <select class="field-input cr-select" id="ch-bg">${optionList(CH_BACKGROUNDS.map(b => [b, b]), ch.background)}</select></div>
+        <select class="field-input cr-select" id="ch-bg">${blankOpt(ch.background)}${optionList(CH_BACKGROUNDS.map(b => [b, b]), ch.background)}</select></div>
       <div class="field-group"><label for="ch-align">Alignment</label>
-        <select class="field-input cr-select" id="ch-align">${optionList(CH_ALIGNMENTS.map(a => [a, a]), ch.alignment)}</select></div>
+        <select class="field-input cr-select" id="ch-align">${blankOpt(ch.alignment)}${optionList(CH_ALIGNMENTS.map(a => [a, a]), ch.alignment)}</select></div>
     </div>
 
     <div class="ch-level">
@@ -686,12 +813,17 @@ function renderSheet() {
     </div>
 
     <div class="ch-derived" id="ch-derived"></div>
+    ${entered ? `<div class="ch-grid3 ch-over">
+      <div class="field-group"><label for="ch-hpmax">Max HP</label><input class="field-input en-num" id="ch-hpmax" type="number" inputmode="numeric" min="1" max="999" placeholder="auto" value="${ch.hpMax || ''}"></div>
+      <div class="field-group"><label for="ch-acv">AC</label><input class="field-input en-num" id="ch-acv" type="number" inputmode="numeric" min="1" max="40" placeholder="auto" value="${ch.acOverride || ''}"></div>
+      <div class="field-group"><label for="ch-spd">Speed</label><input class="field-input en-num" id="ch-spd" type="number" inputmode="numeric" min="0" max="200" step="5" placeholder="auto" value="${ch.speedOverride || ''}"></div>
+    </div>` : ''}
 
     <div class="ch-sec-title">Ability scores</div>
-    <div class="ch-seg" role="radiogroup" aria-label="How to get ability scores">
+    ${entered ? '' : `<div class="ch-seg" role="radiogroup" aria-label="How to get ability scores">
       ${[['roll', '4d6 roll'], ['array', 'Std array'], ['pointbuy', 'Point buy']].map(([v, l]) =>
         `<button class="ch-seg-btn${ch.method === v ? ' on' : ''}" data-method="${v}" role="radio" aria-checked="${ch.method === v}">${l}</button>`).join('')}
-    </div>
+    </div>`}
     <div id="ch-stats"></div>
 
     <div class="ch-sec-title">Personality
@@ -710,10 +842,10 @@ function renderSheet() {
     <div id="ch-appears"></div>
 
     <div class="ch-actions">
-      <button class="btn btn-secondary btn-full" id="ch-reroll-all">${ICON_DIE} Re-roll whole character</button>
+      ${entered ? '' : `<button class="btn btn-secondary btn-full" id="ch-reroll-all">${ICON_DIE} Re-roll whole character</button>`}
       ${isDraft ? '' : '<button class="btn btn-danger btn-full" id="ch-delete">Delete character</button>'}
     </div>
-    ${isDraft ? `<div class="ch-sticky"><button class="btn btn-primary btn-full ch-big-btn" id="ch-save">Save to party</button></div>` : ''}
+    ${isDraft ? `<div class="ch-sticky"><button class="btn btn-primary btn-full ch-big-btn" id="ch-save">Save to this quest</button></div>` : ''}
   `;
 
   renderPortraitActions();
@@ -733,13 +865,33 @@ function renderSheet() {
     ch.aliases = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
     chSaveSoon();
   });
-  $('ch-race').addEventListener('change', e => {
+  if (entered) {
+    $('ch-race-t').addEventListener('input', e => {
+      const t = e.target.value.trim();
+      const k = keyFromText(CH_RACES, t, ch.race);
+      if (k !== ch.race) { ch.race = k; ch.portrait = applyRaceLook(cleanPortrait(ch.portrait), k); if (!ch.photo) $('ch-portrait').innerHTML = portraitHTML(ch); }
+      ch.raceLabel = (CH_RACES[k] && CH_RACES[k].label.toLowerCase() === t.toLowerCase()) ? '' : t;
+      renderDerived(); chSaveSoon();
+    });
+    $('ch-class-t').addEventListener('input', e => {
+      const t = e.target.value.trim();
+      ch.cls = keyFromText(CH_CLASSES, t, ch.cls);
+      ch.clsLabel = (CH_CLASSES[ch.cls] && CH_CLASSES[ch.cls].label.toLowerCase() === t.toLowerCase()) ? '' : t;
+      renderDerived(); chSaveSoon();
+    });
+    const over = (id, key, lo, hi) => $(id).addEventListener('input', e => {
+      const v = parseInt(e.target.value, 10);
+      ch[key] = isNaN(v) ? null : Math.max(lo, Math.min(hi, v));
+      renderDerived(); chSaveSoon();
+    });
+    over('ch-hpmax', 'hpMax', 1, 999); over('ch-acv', 'acOverride', 1, 40); over('ch-spd', 'speedOverride', 0, 200);
+  } else $('ch-race').addEventListener('change', e => {
     ch.race = e.target.value;
     ch.portrait = applyRaceLook(cleanPortrait(ch.portrait), ch.race);
     if (!ch.photo) $('ch-portrait').innerHTML = portraitHTML(ch);
     renderBuilder(); renderDerived(); renderStats(); chSaveSoon();
   });
-  $('ch-class').addEventListener('change', e => { ch.cls = e.target.value; renderDerived(); renderStats(); chSaveSoon(); });
+  if (!entered) $('ch-class').addEventListener('change', e => { ch.cls = e.target.value; renderDerived(); renderStats(); chSaveSoon(); });
   $('ch-bg').addEventListener('change', e => { ch.background = e.target.value; chSaveSoon(); });
   $('ch-align').addEventListener('change', e => { ch.alignment = e.target.value; chSaveSoon(); });
   const setLevel = n => { ch.level = Math.max(1, Math.min(20, n)); $('ch-lvl').textContent = ch.level; renderDerived(); chSaveSoon(); };
@@ -771,7 +923,7 @@ function renderSheet() {
     chSaveSoon();
   });
 
-  $('ch-reroll-all').addEventListener('click', () => {
+  if ($('ch-reroll-all')) $('ch-reroll-all').addEventListener('click', () => {
     if (!chUI.draft && !confirm('Re-roll everything about ' + (ch.name || 'this character') + '? Name, stats, race and class all change.')) return;
     const keep = { id: ch.id, createdAt: ch.createdAt, photo: ch.photo };
     const fresh = generateCharacter({ race: chUI.gen.race, cls: chUI.gen.cls, background: chUI.gen.background, method: ch.method });
@@ -791,7 +943,8 @@ function renderSheet() {
     const saved = Characters.add(chUI.draft);
     chUI.draft = null;
     chUI.currentId = saved.id;
-    showToast((saved.name || 'Character') + ' saved to your party.');
+    if (typeof linksChanged === 'function') linksChanged();
+    showToast((saved.name || 'Character') + ' joined this quest.');
     renderSheet();
   });
 }
@@ -810,6 +963,22 @@ function renderStats() {
   const ch = chCurrent();
   const el = document.getElementById('ch-stats');
   if (!ch || !el) return;
+  if (ch.method === 'entered') {
+    el.innerHTML = '<p class="ch-note">Type the scores from your sheet.</p><div class="ch-stat-grid">' + STATS.map(k => `
+      <div class="ch-stat" data-k="${k}">
+        <div class="ch-stat-head"><span class="ch-stat-lab">${STAT_LABEL[k]}</span></div>
+        <input class="ch-stat-input" type="number" inputmode="numeric" min="1" max="30" value="${ch.base[k]}" data-k="${k}" aria-label="${STAT_NAME[k]} score">
+        <div class="ch-stat-mod">${fmtMod(modOf(ch.base[k]))}</div>
+      </div>`).join('') + '</div>';
+    el.querySelectorAll('.ch-stat-input').forEach(inp => inp.addEventListener('input', () => {
+      const v = parseInt(inp.value, 10);
+      if (isNaN(v)) return;
+      ch.base[inp.dataset.k] = Math.max(1, Math.min(30, v));
+      inp.parentElement.querySelector('.ch-stat-mod').textContent = fmtMod(modOf(ch.base[inp.dataset.k]));
+      renderDerived(); chSaveSoon();
+    }));
+    return;
+  }
   const bonus = racialBonus(ch);
   const sc = finalScores(ch);
   const pb = ch.method === 'pointbuy';

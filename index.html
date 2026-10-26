@@ -153,6 +153,11 @@
         $2.99
       </button>
     </div>
+    <button class="quest-btn" id="quest-btn" aria-label="Switch quest">
+      <span class="quest-label">Quest</span>
+      <span class="quest-name" id="quest-name">My First Quest</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
   </header>
 
   <!-- ── Toast container ────────────────────────────────── -->
@@ -176,6 +181,7 @@
             <div class="round-num" id="round-num">1</div>
           </div>
         </div>
+        <button class="btn btn-secondary" id="party-init-btn" aria-label="Add the quest's party to initiative">+ Party</button>
         <button class="btn btn-secondary" id="reset-combat-btn" aria-label="Reset to round 1">Reset</button>
         <button class="btn btn-secondary" id="clear-combat-btn" aria-label="Clear all combatants">Clear</button>
       </div>
@@ -523,6 +529,7 @@
 
   </nav>
 
+  <script src="js/quests.js"></script>
   <script src="js/initiative.js"></script>
   <script src="js/encounter.js"></script>
   <script src="js/vault.js"></script>

@@ -12,13 +12,13 @@ const Initiative = (() => {
   // ── Persistence ──────────────────────────────────────────
   function save() {
     try {
-      localStorage.setItem('dmforge_initiative', JSON.stringify({ combatants, currentIndex, round, nextId }));
+      localStorage.setItem(Quests.key('initiative'), JSON.stringify({ combatants, currentIndex, round, nextId }));
     } catch (e) { /* storage unavailable */ }
   }
 
   function load() {
     try {
-      const raw = localStorage.getItem('dmforge_initiative');
+      const raw = localStorage.getItem(Quests.key('initiative'));
       if (!raw) return;
       const data = JSON.parse(raw);
       combatants = data.combatants || [];
@@ -215,6 +215,25 @@ function setupInitiativeUI() {
   document.getElementById('prev-turn-btn').addEventListener('click', () => {
     Initiative.prevTurn();
     renderInitiative();
+  });
+
+  // Roll initiative for everyone in this quest's party who isn't already in the fight
+  document.getElementById('party-init-btn').addEventListener('click', () => {
+    const party = partyCharacters();
+    if (!party.length) { showToast('No one is in this quest yet — add heroes on the Heroes tab.'); return; }
+    const inFight = Initiative.getState().combatants.map(c => c.name.toLowerCase());
+    let added = 0;
+    party.forEach(ch => {
+      const name = ch.name || 'Unnamed';
+      if (inFight.indexOf(name.toLowerCase()) >= 0) return;
+      const d = derived(ch);
+      const roll = 1 + Math.floor(Math.random() * 20);
+      const hp = ch.hpCur != null ? ch.hpCur : d.hp;
+      Initiative.addCombatant({ name, initiative: roll + d.init, hp, type: 'character' });
+      added++;
+    });
+    renderInitiative();
+    showToast(added ? 'Rolled initiative for ' + added + ' hero' + (added === 1 ? '' : 'es') + '.' : 'The whole party is already in the fight.');
   });
 
   document.getElementById('reset-combat-btn').addEventListener('click', () => {

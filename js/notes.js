@@ -13,7 +13,7 @@ const Notes = (() => {
 
   function load() {
     try {
-      const raw = localStorage.getItem('dmforge_notes');
+      const raw = localStorage.getItem(Quests.key('notes'));
       if (!raw) return;
       const data = JSON.parse(raw);
       sessions = data.sessions || [];
@@ -24,7 +24,7 @@ const Notes = (() => {
 
   function persist() {
     try {
-      localStorage.setItem('dmforge_notes', JSON.stringify({ sessions, nextId, activeId }));
+      localStorage.setItem(Quests.key('notes'), JSON.stringify({ sessions, nextId, activeId }));
     } catch (e) { showToast('Could not save notes — phone storage is full.'); }
   }
 
@@ -65,7 +65,7 @@ const Notes = (() => {
 const LinkedWords = (() => {
   // Everything that can be linked: player characters + every vault entry
   function getEntities() {
-    const pcs = (typeof Characters !== 'undefined' ? Characters.getAll() : []).map(c => ({
+    const pcs = partyCharacters().map(c => ({
       key: 'character:' + c.id, type: 'character', id: c.id, name: c.name || 'Unnamed',
       terms: [c.name].concat(c.aliases || []), subtitle: typeof subtitleOf === 'function' ? subtitleOf(c) : 'Player character'
     }));
@@ -465,7 +465,7 @@ function openVaultBrowser() {
   const p = sheet.panel;
 
   function items() {
-    const pcs = Characters.getAll().map(c => ({ type: 'character', id: c.id, name: c.name || 'Unnamed', aliases: c.aliases || [], sub: subtitleOf(c) }));
+    const pcs = partyCharacters().map(c => ({ type: 'character', id: c.id, name: c.name || 'Unnamed', aliases: c.aliases || [], sub: subtitleOf(c) }));
     const v = Vault.getAll().map(e => ({ type: e.type, id: e.id, name: e.name, aliases: e.aliases, sub: linkType(e.type).label }));
     return pcs.concat(v);
   }
