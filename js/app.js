@@ -35,7 +35,8 @@ function setupLanding() {
 }
 
 // ── Pro state ──────────────────────────────────────────────
-const PRO_TABS = ['npc','loot','notes','spells'];
+// The notebook is free (with a cap on linked entries, see vault.js) so it can lead the app
+const PRO_TABS = ['npc','loot','spells'];
 
 let proUnlocked = false;
 let proTapCount = 0;
@@ -104,38 +105,52 @@ function setupDevProToggle() {
 }
 
 // ── Tab routing ────────────────────────────────────────────
-function activateTab(tabId) {
+function activateTab(requested) {
+  const tabId = navResolve(requested);
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
 
   const panel = document.getElementById(`tab-${tabId}`);
-  const tabBtn = document.querySelector(`.nav-tab[data-tab="${tabId}"]`);
+  const tabBtn = document.querySelector(`.nav-tab[data-tab="${navButtonFor(tabId)}"]`);
 
   if (panel) panel.classList.add('active');
   if (tabBtn) tabBtn.classList.add('active');
+  const main = document.getElementById('main-content');
+  if (main) main.scrollTop = 0;
 
   try { localStorage.setItem('dmforge_tab', tabId); } catch (e) {}
 
   // Names may have been added or changed on another tab
   if (tabId === 'notes' && typeof onNotesTabShown === 'function') onNotesTabShown();
   if (tabId === 'characters' && typeof onCharactersTabShown === 'function') onCharactersTabShown();
+  if (tabId === 'backup' && typeof renderBackupStatus === 'function') renderBackupStatus();
 }
 
 function setupTabs() {
   document.querySelectorAll('.nav-tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const tab = btn.dataset.tab;
-      // Pro tabs: navigate but show lock banner if not unlocked
-      activateTab(tab);
-    });
+    btn.addEventListener('click', () => activateTab(btn.dataset.tab));
+  });
+
+  // Big buttons on the More page, and "Back to More" buttons on the tools under it
+  document.addEventListener('click', e => {
+    const go = e.target.closest('[data-go]');
+    if (go) activateTab(go.dataset.go);
+  });
+  NAV.UNDER_MORE.forEach(t => {
+    const panel = document.getElementById(`tab-${t}`);
+    if (!panel || panel.querySelector('.back-to-more')) return;
+    const b = document.createElement('button');
+    b.className = 'back-to-more';
+    b.dataset.go = 'more';
+    b.textContent = '\u2190 Back to More';
+    panel.insertBefore(b, panel.firstChild);
   });
 
   // Restore last tab or check URL param
   const params = new URLSearchParams(window.location.search);
-  const urlTab = params.get('tab');
-  let startTab = 'initiative';
+  let startTab = NAV.START;
   try {
-    startTab = urlTab || localStorage.getItem('dmforge_tab') || 'initiative';
+    startTab = params.get('tab') || localStorage.getItem('dmforge_tab') || NAV.START;
   } catch (e) {}
 
   activateTab(startTab);
@@ -187,5 +202,6 @@ document.addEventListener('DOMContentLoaded', () => {
   setupLootUI();
   setupNotesUI();
   setupSpellsUI();
+  setupBackupUI();
   registerServiceWorker();
 });

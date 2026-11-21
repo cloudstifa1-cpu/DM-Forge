@@ -434,6 +434,7 @@ function linkWord(word, type) {
     openCharacterCard(ch.id);
   } else {
     const e = Vault.add(type, name);
+    if (!e) return;
     showToast(`Linked "${name}" as ${linkType(type).label}.`);
     linksChanged();
     openEntryCard(e.id);

@@ -177,7 +177,7 @@ function renderNPCResult(npc) {
     </div>
   `;
   document.getElementById('save-npc-btn').addEventListener('click', () => {
-    NPC.saveNPC(currentNPC);
+    if (!NPC.saveNPC(currentNPC)) return;
     renderSavedNPCs();
     showToast(`${currentNPC.name} saved.`);
   });

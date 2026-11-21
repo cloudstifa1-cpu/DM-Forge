@@ -48,8 +48,8 @@
 
       <!-- Brand -->
       <h1 class="landing-title">DM Forge</h1>
-      <p class="landing-tagline">The ultimate DM toolkit</p>
-      <p class="landing-sub">Initiative · Encounters · Characters · Works offline</p>
+      <p class="landing-tagline">The campaign notebook that links itself</p>
+      <p class="landing-sub">Type a name once — it lights up everywhere. Plus initiative, monsters and heroes. Works offline.</p>
 
       <!-- Feature comparison -->
       <div class="feature-grid">
@@ -57,6 +57,14 @@
         <div class="feature-col">
           <div class="feature-col-head free">Free</div>
           <ul class="feature-list">
+            <li>
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+              Linked Campaign Notebook (25 entries)
+            </li>
+            <li>
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+              Backup &amp; Restore
+            </li>
             <li>
               <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
               Initiative Tracker
@@ -97,7 +105,7 @@
             </li>
             <li>
               <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
-              Session Notes
+              Unlimited notebook entries &amp; quests
             </li>
             <li>
               <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
@@ -164,6 +172,12 @@
   <div id="toast-container" class="toast-container" role="status" aria-live="polite" aria-atomic="true"></div>
 
   <!-- ── Main content ───────────────────────────────────── -->
+  <div class="backup-reminder" id="backup-reminder" hidden>
+    <span>It's been a week since your last backup.</span>
+    <button class="btn-inline-unlock" id="backup-reminder-btn">Back up now</button>
+    <button class="backup-reminder-x" id="backup-reminder-x" aria-label="Hide this reminder">&times;</button>
+  </div>
+
   <main class="app-main" id="main-content">
 
     <!-- Initiative Tracker -->
@@ -384,15 +398,10 @@
     </section>
 
     <!-- Session Notes -->
-    <section class="tab-panel pro-panel-tab" id="tab-notes" role="tabpanel" aria-label="Session Notes">
-      <div class="pro-lock-banner" id="notes-lock-banner">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-        <span>Pro feature</span>
-        <button class="btn-inline-unlock js-unlock-pro">Unlock — $2.99</button>
-      </div>
+    <section class="tab-panel" id="tab-notes" role="tabpanel" aria-label="Campaign Notebook">
       <div class="section-head">
-        <h2>Session Notes</h2>
-        <p>One note per session. Saved automatically.</p>
+        <h2>Campaign Notebook</h2>
+        <p>One page per session. Link any name and it lights up everywhere. Saves by itself.</p>
       </div>
       <button class="btn btn-primary btn-full" id="new-session-btn" style="margin-bottom:var(--gap-md)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
@@ -479,65 +488,69 @@
       <div id="spell-list"></div>
     </section>
 
+  <!-- More: the extra tools -->
+    <section class="tab-panel" id="tab-more" role="tabpanel" aria-label="More tools">
+      <div class="section-head">
+        <h2>More</h2>
+        <p>Extra tools, and a safe copy of your game.</p>
+      </div>
+      <div class="more-grid">
+        <button class="more-tile" data-go="npc"><span class="more-tile-name">NPC Generator</span><span class="more-tile-sub">Make a person in one tap</span></button>
+        <button class="more-tile" data-go="loot"><span class="more-tile-name">Loot</span><span class="more-tile-sub">Roll treasure and hoards</span></button>
+        <button class="more-tile" data-go="spells"><span class="more-tile-name">Spells</span><span class="more-tile-sub">Look up any SRD spell</span></button>
+        <button class="more-tile more-tile-safe" data-go="backup"><span class="more-tile-name">Backup &amp; Restore</span><span class="more-tile-sub">Save your game to a file</span></button>
+      </div>
+      <p class="more-note">Spells and monsters come from the D&amp;D 5e System Reference Document (SRD 5.1 / 5.2) by Wizards of the Coast, used under the Creative Commons Attribution 4.0 license. DM Forge is not made or endorsed by Wizards of the Coast.</p>
+    </section>
+
+    <!-- Backup & Restore -->
+    <section class="tab-panel" id="tab-backup" role="tabpanel" aria-label="Backup and Restore">
+      <div class="section-head">
+        <h2>Backup &amp; Restore</h2>
+        <p>Your quests, notes, heroes and monsters live only on this phone. If the browser clears its data, they're gone. Make a backup file and keep it somewhere safe.</p>
+      </div>
+      <p class="backup-status" id="backup-status"></p>
+      <button class="btn btn-primary btn-full" id="backup-btn">Make a backup file</button>
+      <button class="btn btn-secondary btn-full" id="restore-btn" style="margin-top:var(--gap-md)">Restore from a backup file</button>
+      <input type="file" id="restore-file" accept=".json,application/json" hidden>
+      <div class="restore-confirm" id="restore-confirm" hidden>
+        <p>Replace everything on this phone with the backup from <strong class="restore-when"></strong>? Anything newer than that backup will be lost.</p>
+        <div class="restore-actions">
+          <button class="btn btn-primary" id="restore-yes">Yes, restore it</button>
+          <button class="btn btn-secondary" id="restore-no">Cancel</button>
+        </div>
+      </div>
+      <p class="more-note">Tip: you can move your whole game to a new phone or a laptop by restoring the backup file there.</p>
+    </section>
+
   </main>
 
   <!-- ── Bottom navigation ───────────────────────────────── -->
   <nav class="app-nav" role="tablist" aria-label="Main navigation">
-
-    <button class="nav-tab" role="tab" data-tab="initiative" aria-label="Initiative Tracker">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M12 6v6l4 2"/>
-      </svg>
-      Initiative
+    <button class="nav-tab" role="tab" data-tab="notes" aria-label="Campaign Notebook">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>
+      Notebook
     </button>
-
-    <button class="nav-tab" role="tab" data-tab="encounter" aria-label="Monsters">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-        <path d="M12 2a5 5 0 015 5c0 2.5-1.5 4-3 5l1.5 10H8.5L10 12c-1.5-1-3-2.5-3-5a5 5 0 015-5z"/>
-      </svg>
+    <button class="nav-tab" role="tab" data-tab="initiative" aria-label="Initiative Tracker">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      Fight
+    </button>
+    <button class="nav-tab" role="tab" data-tab="encounter" aria-label="Monsters and Encounters">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M12 2a5 5 0 015 5c0 2.5-1.5 4-3 5l1.5 10H8.5L10 12c-1.5-1-3-2.5-3-5a5 5 0 015-5z"/></svg>
       Monsters
     </button>
-
-    <button class="nav-tab" role="tab" data-tab="characters" aria-label="Characters">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-        <path d="M12 2l7 3v6c0 5-3 8.5-7 11-4-2.5-7-6-7-11V5l7-3z"/>
-        <path d="M9 12l2 2 4-4"/>
-      </svg>
+    <button class="nav-tab" role="tab" data-tab="characters" aria-label="Heroes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M12 2l7 3v6c0 5-3 8.5-7 11-4-2.5-7-6-7-11V5l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
       Heroes
     </button>
-
-    <button class="nav-tab pro-tab" role="tab" data-tab="npc" aria-label="NPC Generator">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-        <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14c-5 0-8 2-8 3v1h16v-1c0-1-3-3-8-3z"/>
-      </svg>
-      NPC
+    <button class="nav-tab" role="tab" data-tab="more" aria-label="More tools and backup">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+      More
     </button>
-
-    <button class="nav-tab pro-tab" role="tab" data-tab="loot" aria-label="Loot Generator">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-        <path d="M20 12V22H4V12M22 7H2v5h20V7zM12 22V7"/>
-      </svg>
-      Loot
-    </button>
-
-    <button class="nav-tab pro-tab" role="tab" data-tab="notes" aria-label="Session Notes">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/>
-        <path d="M14 2v6h6M16 13H8M16 17H8"/>
-      </svg>
-      Notes
-    </button>
-
-    <button class="nav-tab pro-tab" role="tab" data-tab="spells" aria-label="Spell Reference">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-      </svg>
-      Spells
-    </button>
-
   </nav>
 
+  <script src="js/nav.js"></script>
+  <script src="js/backup.js"></script>
   <script src="js/quests.js"></script>
   <script src="js/initiative.js"></script>
   <script src="js/encounter.js"></script>

@@ -116,7 +116,16 @@ const Vault = (() => {
     }
   }
 
+  // Free version: up to FREE_LIMIT linked entries per quest. Pro: unlimited.
+  const FREE_LIMIT = 25;
+  function isPro() { return typeof isProUnlocked === 'function' && isProUnlocked(); }
+  function atFreeLimit() { return !isPro() && entries.length >= FREE_LIMIT; }
+
   function add(type, name, extra) {
+    if (atFreeLimit()) {
+      if (typeof showToast === 'function') showToast('The free notebook holds ' + FREE_LIMIT + ' linked entries. Unlock Pro for unlimited.', 3500);
+      return null;
+    }
     const e = Object.assign({
       id: nextId++, type: VAULT_TYPES.indexOf(type) >= 0 ? type : 'lore',
       name: String(name || '').trim() || 'Unnamed', aliases: [], details: '', fields: {},
@@ -140,5 +149,5 @@ const Vault = (() => {
   function getAll() { return entries; }
   function byType(type) { return entries.filter(e => e.type === type); }
 
-  return { load, add, update, remove, get, getAll, byType, persist };
+  return { FREE_LIMIT, atFreeLimit, load, add, update, remove, get, getAll, byType, persist };
 })();

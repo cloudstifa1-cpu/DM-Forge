@@ -264,10 +264,11 @@ function openMonsterSheet(key) {
   $('mon-to-vault').addEventListener('click', () => {
     const existing = Vault.getAll().find(e => e.type === 'creature' && e.name.toLowerCase() === m.n.toLowerCase());
     if (existing) { showToast(m.n + ' is already in this quest\'s vault.'); return; }
-    Vault.add('creature', m.n, {
+    const saved = Vault.add('creature', m.n, {
       details: monSub(m) + '. Speed ' + (m.sp || '—') + '. ' + (m.a || []).map(a => a[0] + ': ' + a[1]).join(' '),
       fields: { hpCur: String(m.hp), hpMax: String(m.hp), ac: String(m.ac), cr: crText(m.cr), attitude: 'Hostile' }
     });
+    if (!saved) return;
     if (typeof linksChanged === 'function') linksChanged();
     showToast(m.n + ' saved. Its name now links in your notes.');
   });

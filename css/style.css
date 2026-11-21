@@ -171,8 +171,8 @@ h1, h2, h3 {
   gap: 3px;
   min-height: var(--touch-min);
   padding: var(--gap-sm) 0;
-  color: var(--text-dim);
-  font-size: .62rem;
+  color: var(--text-secondary);
+  font-size: .78rem;
   letter-spacing: 0;
   font-family: var(--font-ui);
   font-weight: 500;
@@ -2217,3 +2217,67 @@ mark.lw { color: var(--c); border-bottom-color: transparent; }
 .monster-link { background: none; border: 0; padding: 4px 0; text-align: left; color: #8fcf6a; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .enc-actions { display: grid; grid-template-columns: 2fr 1fr; gap: 8px; margin-bottom: 16px; }
 .enc-party-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+
+
+/* ============================================================
+   More page, Backup & Restore, reminder (rework Nov 2026)
+   ============================================================ */
+.more-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap-md); }
+.more-tile {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+  min-height: 96px; padding: var(--gap-md); text-align: left;
+  background: var(--forge-raised); border: 1px solid var(--forge-border);
+  border-radius: var(--radius-md); color: var(--text-primary); cursor: pointer;
+}
+.more-tile:active, .more-tile:hover { border-color: var(--ember-bright); }
+.more-tile-name { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; color: var(--gold); }
+.more-tile-sub { font-size: .9rem; color: var(--text-primary); line-height: 1.35; }
+.more-tile-safe { border-color: var(--gold); }
+.more-note { margin-top: var(--gap-lg); font-size: .85rem; line-height: 1.5; color: var(--text-secondary); }
+
+.back-to-more {
+  display: inline-block; margin-bottom: var(--gap-md); min-height: 40px; padding: 0 14px;
+  background: var(--forge-raised); border: 1px solid var(--forge-border); border-radius: var(--radius-sm);
+  color: var(--text-primary); font-size: .95rem; font-weight: 600; cursor: pointer;
+}
+
+.backup-status { font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: var(--gap-md); }
+.restore-confirm {
+  margin-top: var(--gap-md); padding: var(--gap-md);
+  border: 2px solid var(--ember-bright); border-radius: var(--radius-md); background: var(--forge-raised);
+}
+.restore-confirm[hidden] { display: none; }
+.restore-confirm p { color: var(--text-primary); font-size: 1rem; line-height: 1.5; margin-bottom: var(--gap-md); }
+.restore-actions { display: flex; gap: var(--gap-sm); flex-wrap: wrap; }
+
+.backup-reminder {
+  display: none; align-items: center; gap: var(--gap-sm);
+  padding: var(--gap-sm) var(--gap-md); background: #4a2a12; border-bottom: 1px solid var(--ember-bright);
+  color: var(--text-primary); font-size: .95rem;
+}
+body.app-launched .backup-reminder:not([hidden]) { display: flex; }
+.backup-reminder span { flex: 1; }
+.backup-reminder-x {
+  min-width: 40px; min-height: 40px; font-size: 1.4rem; line-height: 1;
+  background: none; border: none; color: var(--text-primary); cursor: pointer;
+}
+
+/* ── Tablet: wider content ── */
+@media (min-width: 768px) {
+  .app-main { max-width: 860px; }
+  .more-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ── Laptop / big tablet: menu moves to a left-side rail ── */
+@media (min-width: 1024px) {
+  body.app-launched .app-nav {
+    top: 0; bottom: 0; right: auto; width: 112px;
+    flex-direction: column; justify-content: flex-start; gap: 6px;
+    padding-top: 72px; border-top: none; border-right: 1px solid var(--forge-border);
+    z-index: 90;
+  }
+  .nav-tab { flex: 0 0 auto; min-height: 72px; font-size: .85rem; }
+  .nav-tab.active::before { top: 15%; bottom: 15%; left: 0; right: auto; width: 3px; height: auto; }
+  .app-header, .backup-reminder { margin-left: 112px; }
+  .app-main { margin-left: calc(112px + max(0px, (100vw - 112px - 1000px) / 2)); margin-right: auto; max-width: 1000px; padding-bottom: var(--gap-xl); }
+}

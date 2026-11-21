@@ -4,17 +4,25 @@ A Progressive Web App (PWA) dungeon master toolkit for tabletop RPG. Built for m
 
 ## Features
 
+Bottom bar: **Notebook · Fight · Monsters · Heroes · More** (on laptops/big tablets it becomes a left-side rail).
+
 ### Free tier
-- **Initiative Tracker** — Add combatants with name, initiative roll, HP, and type. Sorted automatically. Highlight active turn, round counter, next/prev navigation.
-- **Encounter Builder** — Add monsters by name and CR, calculates XP and difficulty rating (trivial / easy / medium / hard / deadly) based on D&D 5e SRD thresholds against party size and level.
+- **Linked Campaign Notebook** (opens first) — one page per session; names link themselves and each type gets its own color. Free holds 25 linked entries per quest.
+- **Fight** — initiative tracker with rounds and turns.
+- **Monsters** — SRD monster list, homemade monsters, encounter builder with difficulty.
+- **Heroes** — bring-your-own character entry, rolled stats, shared roster across quests.
+- **Backup & Restore** (More) — saves everything to one .json file; weekly reminder banner.
 
-### DM Forge Pro — $2.99 (placeholder)
-- NPC Generator
-- Loot Generator
-- Session Notes
-- Spell Reference
+### DM Forge Pro — $2.99 one-time (payment not wired yet)
+- Unlimited notebook entries and quests
+- NPC Generator, Loot Generator, Spell Reference (under More)
+- Portraits and pre-made heroes
 
-Payment not yet integrated — unlock button is wired but shows a coming-soon toast.
+## Tests
+
+```bash
+node --test tests/*.test.js
+```
 
 ## Tech stack
 

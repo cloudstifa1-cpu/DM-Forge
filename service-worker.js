@@ -1,9 +1,11 @@
-const CACHE_NAME = 'dm-forge-v9';
+const CACHE_NAME = 'dm-forge-v10';
 const ASSETS = [
   './',
   './index.html',
   './css/style.css',
   './js/app.js',
+  './js/nav.js',
+  './js/backup.js',
   './js/quests.js',
   './js/initiative.js',
   './js/encounter.js',
